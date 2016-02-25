@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="target-densitydpi=device-dpi, height=660, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Blockly Demo: Toolbox Factory</title>
-  <script src="/storage.js"></script>
+  
   <script src="factory.js"></script>
-  <script src="../../blockly_compressed.js"></script>
+  <script src="../../blockly_uncompressed.js"></script>
   <script src="../../msg/messages.js"></script>
   <script src="blocks.js"></script>
   <style>
@@ -96,19 +96,11 @@
     <tr>
       <td width="50%" height="5%">
         <h1><a href="https://developers.google.com/blockly/">Blockly</a> &gt;
-          <a href="../index.html">Demos</a> &gt; Block Factory</h1>
+          <a href="../index.html">Demos</a> &gt; Toolbox Factory</h1>
       </td>
       <td width="50%" height="5%">
         <table>
           <tr>
-            <td style="vertical-align: bottom;">
-              <h3>Preview:
-                <select id="direction">
-                  <option value="ltr">LTR</option>
-                  <option value="rtl">RTL</option>
-                </select>
-              </h3>
-            </td>
             <td style="vertical-align: middle; text-align: right;">
               <button id="linkButton" title="Save and link to blocks.">
                 <img src="link.png" height="21" width="21">
@@ -132,19 +124,17 @@
       <td width="50%" height="95%">
         <table>
           <tr>
-            <td height="30%">
-              <div id="preview"></div>
+            <td height="50%">
+              <div id="preview">Preview
+                
+              </div>
+              <div style="float:right;">
+              <img src="toolbox.png"></div>
             </td>
           </tr>
           <tr>
             <td height="5%">
-              <h3>Language code:
-                <select id="format">
-                  <option value="JavaScript">JavaScript</option>
-                  <option value="JSON">JSON</option>
-                  <option value="Manual">Manual edit...</option>
-                </select>
-              </h3>
+              <h3>Toolbox XML</h3>
             </td>
           </tr>
           <tr>

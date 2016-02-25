@@ -93,12 +93,62 @@ function updateLanguage() {
   
   var code = generateXml_();
   injectCode(code, 'languagePre');
-  updatePreview();
+  //updatePreview();
 }
+
+function getXmlForSeparatorBlock_(block) {
+  var blockXml = '<sep gap="';
+  blockXml += block.getFieldValue('numPixels');
+  blockXml += '"></sep>';
+  return blockXml;
+
+}
+
+function getXmlForCategoryBlock_(block) {
+  var blockXml = '<category name="';
+  blockXml += block.getFieldValue('catName');
+  blockXml += '">';
+  var subBlock = block.getInputTargetBlock('SubCategory');
+  if (subBlock) {
+    blockXml += getXmlRecursive_(subBlock);
+  }
+  blockXml += '</category>';
+  return blockXml;
+
+}
+
+function getXmlRecursive_(block) {
+ var xml = '';
+ while (block) {
+  if (block.getFieldValue('catName')) {
+    xml += getXmlForCategoryBlock_(block);
+  } else if (block.getFieldValue('numPixels'))  {
+    xml += getXmlForSeparatorBlock_(block);
+  }
+  block = 
+    block.nextConnection && block.nextConnection.targetBlock();
+ }
+ return xml;
+}
+
 function generateXml_() {
-  return "abcxyz";
+  var xml = '<xml id="toolbox" style="display:none">';
+  var rootBlock = getRootBlock();
+  var contentsBlock = rootBlock.getInputTargetBlock('INPUTS');
+  // to get next block:
+  // if (block.nextConnection && block.nextConnection.targetBlock()) {
+  //   blockXml += getXmlForCategoryBlock_(block.nextConnection.targetBlock());
+  // }
+  // while (contentsBlock) {
+  //   xml += getXmlForCategoryBlock_(contentsBlock);
+  //   contentsBlock = 
+  //     contentsBlock.nextConnection && contentsBlock.nextConnection.targetBlock();
+  // }
+  xml += getXmlRecursive_(contentsBlock);
+  xml += '</xml>';
+  return xml;
 }
-/**
+/** 
  * Update the language code as JSON.
  * @param {string} blockType Name of block.
  * @param {!Blockly.Block} rootBlock Factory_base block.
@@ -615,7 +665,8 @@ var oldDir = null;
  */
 function updatePreview() {
   // Toggle between LTR/RTL if needed (also used in first display).
-  var newDir = document.getElementById('direction').value;
+//    var newDir = document.getElementById('direction').value;
+  var newDir = 'rtl';
   if (oldDir != newDir) {
     if (previewWorkspace) {
       previewWorkspace.dispose();
@@ -792,15 +843,15 @@ function init() {
   }
 
   mainWorkspace.addChangeListener(updateLanguage);
-  document.getElementById('direction')
-      .addEventListener('change', updatePreview);
+  // document.getElementById('direction')
+  //     .addEventListener('change', updatePreview);
   document.getElementById('languageTA')
       .addEventListener('change', updatePreview);
   document.getElementById('languageTA')
       .addEventListener('keyup', updatePreview);
-  document.getElementById('format')
-      .addEventListener('change', formatChange);
-  document.getElementById('language')
-      .addEventListener('change', updatePreview);
+  // // document.getElementById('format')
+  // //     .addEventListener('change', formatChange);
+  // document.getElementById('language')
+  //     .addEventListener('change', updatePreview);
 }
 window.addEventListener('load', init);

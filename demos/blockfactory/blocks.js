@@ -100,7 +100,7 @@ Blockly.Blocks['separator'] = {
         .appendField("separator");
     this.appendValueInput("pixels")
         .setCheck("Number")
-        .appendField(new Blockly.FieldTextInput("num pixels"), "NAME");
+        .appendField(new Blockly.FieldTextInput("num pixels"), "numPixels");
     this.setPreviousStatement(true, "category");
     this.setNextStatement(true, "category");
     this.setColour(0);
@@ -112,9 +112,6 @@ Blockly.Blocks['numPixels'] = {
   init: function() {
     this.appendDummyInput()
         .appendField("numPixels");
-    this.appendValueInput("NAME")
-        .setCheck("Number");
-    this.setInputsInline(true);
     this.setOutput(true, "Number");
     this.setColour(160);
     this.setTooltip('');
