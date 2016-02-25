@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="target-densitydpi=device-dpi, height=660, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Blockly Demo: Block Factory</title>
+  <title>Blockly Demo: Toolbox Factory</title>
   <script src="/storage.js"></script>
   <script src="factory.js"></script>
   <script src="../../blockly_compressed.js"></script>
@@ -154,18 +154,6 @@
             </td>
           </tr>
           <tr>
-            <td height="5%">
-              <h3>Generator stub:
-                <select id="language">
-                  <option value="JavaScript">JavaScript</option>
-                  <option value="Python">Python</option>
-                  <option value="PHP">PHP</option>
-                  <option value="Dart">Dart</option>
-                </select>
-              </h3>
-            </td>
-          </tr>
-          <tr>
             <td height="30%">
               <pre id="generatorPre"></pre>
             </td>
@@ -176,34 +164,13 @@
   </table>
   <xml id="toolbox" style="display: none">
     <category name="Input">
-      <block type="input_value"></block>
-      <block type="input_statement"></block>
-      <block type="input_dummy"></block>
+      <block type="category"></block>
+      <block type="separator"></block>
     </category>
-    <category name="Field">
-      <block type="field_static"></block>
-      <block type="field_input"></block>
-      <block type="field_angle"></block>
-      <block type="field_dropdown"></block>
-      <block type="field_checkbox"></block>
-      <block type="field_colour"></block>
-      <!--
-      Date picker commented out since it increases footprint by 60%.
-      Add it only if you need it.  See also goog.require in blockly.js.
-      <block type="field_date"></block>
-      -->
-      <block type="field_variable"></block>
-      <block type="field_image"></block>
+    <category name="Values">
+      <block type="numPixels"></block>
     </category>
-    <category name="Type">
-      <block type="type_group"></block>
-      <block type="type_null"></block>
-      <block type="type_boolean"></block>
-      <block type="type_number"></block>
-      <block type="type_string"></block>
-      <block type="type_list"></block>
-      <block type="type_other"></block>
-    </category>
+
     <category name="Colour" id="colourCategory">
       <block type="colour_hue"><mutation colour="20"></mutation><field name="HUE">20</field></block>
       <block type="colour_hue"><mutation colour="65"></mutation><field name="HUE">65</field></block>

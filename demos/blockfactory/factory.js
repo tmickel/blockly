@@ -20,6 +20,17 @@
 /**
  * @fileoverview JavaScript for Blockly's Block Factory application.
  * @author fraser@google.com (Neil Fraser)
+
+ Blockly.Blocks['math_foo'] = {
+  init: function() {
+    this.appendStatementInput("ToolboxDef")
+        .setCheck("category")
+        .appendField(new Blockly.FieldTextInput("Toolbox"), "NAME");
+    this.setColour(20);
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
  */
 'use strict';
 
@@ -78,18 +89,15 @@ function updateLanguage() {
     blockType = UNNAMED;
   }
   blockType = blockType.replace(/\W/g, '_').replace(/^(\d)/, '_\\1');
-  switch (document.getElementById('format').value) {
-    case 'JSON':
-      var code = formatJson_(blockType, rootBlock);
-      break;
-    case 'JavaScript':
-      var code = formatJavaScript_(blockType, rootBlock);
-      break;
-  }
+
+  
+  var code = generateXml_();
   injectCode(code, 'languagePre');
   updatePreview();
 }
-
+function generateXml_() {
+  return "abcxyz";
+}
 /**
  * Update the language code as JSON.
  * @param {string} blockType Name of block.

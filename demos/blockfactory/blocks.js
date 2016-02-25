@@ -29,27 +29,10 @@ Blockly.Blocks['factory_base'] = {
     this.setColour(120);
     this.appendDummyInput()
         .appendField('name')
-        .appendField(new Blockly.FieldTextInput('math_foo'), 'NAME');
+        .appendField(new Blockly.FieldTextInput('toolbox'), 'NAME');
     this.appendStatementInput('INPUTS')
-        .setCheck('Input')
-        .appendField('inputs');
-    var dropdown = new Blockly.FieldDropdown([
-        ['automatic inputs', 'AUTO'],
-        ['external inputs', 'EXT'],
-        ['inline inputs', 'INT']]);
-    this.appendDummyInput()
-        .appendField(dropdown, 'INLINE');
-    dropdown = new Blockly.FieldDropdown([
-        ['no connections', 'NONE'],
-        ['← left output', 'LEFT'],
-        ['↕ top+bottom connections', 'BOTH'],
-        ['↑ top connection', 'TOP'],
-        ['↓ bottom connection', 'BOTTOM']],
-        function(option) {
-          this.sourceBlock_.updateShape_(option);
-        });
-    this.appendDummyInput()
-        .appendField(dropdown, 'CONNECTIONS');
+        .setCheck('Category')
+        .appendField('categories');
     this.appendValueInput('COLOUR')
         .setCheck('Colour')
         .appendField('colour');
@@ -111,6 +94,58 @@ Blockly.Blocks['factory_base'] = {
     }
   }
 };
+Blockly.Blocks['separator'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("separator");
+    this.appendValueInput("pixels")
+        .setCheck("Number")
+        .appendField(new Blockly.FieldTextInput("num pixels"), "NAME");
+    this.setPreviousStatement(true, "category");
+    this.setNextStatement(true, "category");
+    this.setColour(0);
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+Blockly.Blocks['numPixels'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("numPixels");
+    this.appendValueInput("NAME")
+        .setCheck("Number");
+    this.setInputsInline(true);
+    this.setOutput(true, "Number");
+    this.setColour(160);
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+Blockly.Blocks['category'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("category name")
+        .appendField(new Blockly.FieldTextInput("default"), "catName");
+    this.appendValueInput("Colour")
+        .setCheck("Colour");
+    this.appendStatementInput("SubCategory")
+        .setCheck("category")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("subcategory");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true, "category");
+    this.setColour(260);
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  },
+  onchange: function() {
+    if (!this.workspace) {
+      // Block has been deleted.
+      return;
+    }
+    //inputNameCheck(this);
+  }
+};
 
 var ALIGNMENT_OPTIONS =
     [['left', 'LEFT'], ['right', 'RIGHT'], ['centre', 'CENTRE']];
@@ -149,16 +184,8 @@ Blockly.Blocks['input_statement'] = {
   init: function() {
     this.setColour(210);
     this.appendDummyInput()
-        .appendField('statement input')
+        .appendField('category fake')
         .appendField(new Blockly.FieldTextInput('NAME'), 'INPUTNAME');
-    this.appendStatementInput('FIELDS')
-        .setCheck('Field')
-        .appendField('fields')
-        .appendField(new Blockly.FieldDropdown(ALIGNMENT_OPTIONS), 'ALIGN');
-    this.appendValueInput('TYPE')
-        .setCheck('Type')
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField('type');
     this.setPreviousStatement(true, 'Input');
     this.setNextStatement(true, 'Input');
     this.setTooltip('A statement socket for enclosed vertical stacks.');
