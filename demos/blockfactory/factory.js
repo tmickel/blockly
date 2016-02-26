@@ -100,7 +100,12 @@ function updateLanguage() {
 
 function getXmlForSeparatorBlock_(block) {
   var blockXml = '<sep gap="';
-  blockXml += block.getFieldValue('numPixels');
+  var px = block.getInput('pixels');
+  var pxBlock = px.connection.targetBlock();
+  if (pxBlock) {
+    var gapValue = pxBlock.getFieldValue('NUM');
+    blockXml += gapValue;
+  }
   blockXml += '"></sep>';
   return blockXml;
 
@@ -109,7 +114,17 @@ function getXmlForSeparatorBlock_(block) {
 function getXmlForCategoryBlock_(block) {
   var blockXml = '<category name="';
   blockXml += block.getFieldValue('catName');
-  blockXml += '">';
+
+  // Set colour attribute if there is one.
+  var colour = block.getInput('Colour');
+  var colourBlock = colour.connection.targetBlock();
+  if (colourBlock) {
+    var hue = colourBlock.getFieldValue('HUE');
+    blockXml += '" colour="';
+    blockXml += hue;
+  }
+
+  blockXml += '">'
   var subBlock = block.getInputTargetBlock('SubCategory');
   if (subBlock) {
     blockXml += getXmlRecursive_(subBlock);
@@ -124,7 +139,7 @@ function getXmlRecursive_(block) {
  while (block) {
   if (block.getFieldValue('catName')) {
     xml += getXmlForCategoryBlock_(block);
-  } else if (block.getFieldValue('numPixels'))  {
+  } else if (block.type == 'separator')  {
     xml += getXmlForSeparatorBlock_(block);
   }
   block = 

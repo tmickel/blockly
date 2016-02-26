@@ -33,9 +33,6 @@ Blockly.Blocks['factory_base'] = {
     this.appendStatementInput('INPUTS')
         .setCheck('Category')
         .appendField('categories');
-    this.appendValueInput('COLOUR')
-        .setCheck('Colour')
-        .appendField('colour');
     /*
     this.appendValueInput('TOOLTIP')
         .setCheck('String')
@@ -100,7 +97,7 @@ Blockly.Blocks['separator'] = {
         .appendField("separator");
     this.appendValueInput("pixels")
         .setCheck("Number")
-        .appendField(new Blockly.FieldTextInput("num pixels"), "numPixels");
+        .appendField("num pixels");
     this.setPreviousStatement(true, "category");
     this.setNextStatement(true, "category");
     this.setColour(0);
@@ -108,23 +105,34 @@ Blockly.Blocks['separator'] = {
     this.setHelpUrl('http://www.example.com/');
   }
 };
+
 Blockly.Blocks['numPixels'] = {
   init: function() {
+    this.setHelpUrl(Blockly.Msg.MATH_NUMBER_HELPURL);
+    this.setColour(210);
     this.appendDummyInput()
-        .appendField("numPixels");
-    this.setOutput(true, "Number");
-    this.setColour(160);
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
+        .appendField(new Blockly.FieldTextInput('24',
+        Blockly.FieldTextInput.numberValidator), 'NUM');
+    this.setOutput(true, 'Number');
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    // Number block is trivial.  Use tooltip of parent block if it exists.
+    this.setTooltip(function() {
+      var parent = thisBlock.getParent();
+      return (parent && parent.tooltip) || Blockly.Msg.MATH_NUMBER_TOOLTIP;
+    });
   }
 };
+
 Blockly.Blocks['category'] = {
   init: function() {
     this.appendDummyInput()
         .appendField("category name")
         .appendField(new Blockly.FieldTextInput("default"), "catName");
     this.appendValueInput("Colour")
-        .setCheck("Colour");
+        .setCheck("Colour")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("color");
     this.appendStatementInput("SubCategory")
         .setCheck("category")
         .setAlign(Blockly.ALIGN_RIGHT)
