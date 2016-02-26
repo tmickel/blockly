@@ -45,6 +45,7 @@ var mainWorkspace = null;
  * @type {Blockly.Workspace}
  */
 var previewWorkspace = null;
+var previewToolbox = null;
 
 /**
  * Name of block if not named.
@@ -90,10 +91,11 @@ function updateLanguage() {
   }
   blockType = blockType.replace(/\W/g, '_').replace(/^(\d)/, '_\\1');
 
-  
-  var code = generateXml_();
+  var xml = generateXml_();
+  var tree = Blockly.parseToolboxTree_(xml);
+  var code  = Blockly.Xml.domToPrettyText(tree);
   injectCode(code, 'languagePre');
-  //updatePreview();
+  updatePreview();
 }
 
 function getXmlForSeparatorBlock_(block) {
@@ -577,82 +579,7 @@ function getTypesFrom_(block, name) {
  * @param {!Blockly.Block} block Rendered block in preview workspace.
  */
 function updateGenerator(block) {
-  function makeVar(root, name) {
-    name = name.toLowerCase().replace(/\W/g, '_');
-    return '  var ' + root + '_' + name;
-  }
-  var language = document.getElementById('language').value;
-  var code = [];
-  code.push("Blockly." + language + "['" + block.type +
-            "'] = function(block) {");
-
-  // Generate getters for any fields or inputs.
-  for (var i = 0, input; input = block.inputList[i]; i++) {
-    for (var j = 0, field; field = input.fieldRow[j]; j++) {
-      var name = field.name;
-      if (!name) {
-        continue;
-      }
-      if (field instanceof Blockly.FieldVariable) {
-        // Subclass of Blockly.FieldDropdown, must test first.
-        code.push(makeVar('variable', name) +
-                  " = Blockly." + language +
-                  ".variableDB_.getName(block.getFieldValue('" + name +
-                  "'), Blockly.Variables.NAME_TYPE);");
-      } else if (field instanceof Blockly.FieldAngle) {
-        // Subclass of Blockly.FieldTextInput, must test first.
-        code.push(makeVar('angle', name) +
-                  " = block.getFieldValue('" + name + "');");
-      } else if (Blockly.FieldDate && field instanceof Blockly.FieldDate) {
-        // Blockly.FieldDate may not be compiled into Blockly.
-        code.push(makeVar('date', name) +
-                  " = block.getFieldValue('" + name + "');");
-      } else if (field instanceof Blockly.FieldColour) {
-        code.push(makeVar('colour', name) +
-                  " = block.getFieldValue('" + name + "');");
-      } else if (field instanceof Blockly.FieldCheckbox) {
-        code.push(makeVar('checkbox', name) +
-                  " = block.getFieldValue('" + name + "') == 'TRUE';");
-      } else if (field instanceof Blockly.FieldDropdown) {
-        code.push(makeVar('dropdown', name) +
-                  " = block.getFieldValue('" + name + "');");
-      } else if (field instanceof Blockly.FieldTextInput) {
-        code.push(makeVar('text', name) +
-                  " = block.getFieldValue('" + name + "');");
-      }
-    }
-    var name = input.name;
-    if (name) {
-      if (input.type == Blockly.INPUT_VALUE) {
-        code.push(makeVar('value', name) +
-                  " = Blockly." + language + ".valueToCode(block, '" + name +
-                  "', Blockly." + language + ".ORDER_ATOMIC);");
-      } else if (input.type == Blockly.NEXT_STATEMENT) {
-        code.push(makeVar('statements', name) +
-                  " = Blockly." + language + ".statementToCode(block, '" +
-                  name + "');");
-      }
-    }
-  }
-  // Most languages end lines with a semicolon.  Python does not.
-  var lineEnd = {
-    'JavaScript': ';',
-    'Python': '',
-    'PHP': ';',
-    'Dart': ';'
-  };
-  code.push("  // TODO: Assemble " + language + " into code variable.");
-  if (block.outputConnection) {
-    code.push("  var code = '...';");
-    code.push("  // TODO: Change ORDER_NONE to the correct strength.");
-    code.push("  return [code, Blockly." + language + ".ORDER_NONE];");
-  } else {
-    code.push("  var code = '..." + (lineEnd[language] || '') + "\\n';");
-    code.push("  return code;");
-  }
-  code.push("};");
-
-  injectCode(code.join('\n'), 'generatorPre');
+  // fill in with toolbox preview.
 }
 
 /**
@@ -664,89 +591,44 @@ var oldDir = null;
  * Update the preview display.
  */
 function updatePreview() {
+  // PUT THIS BACK IN
   // Toggle between LTR/RTL if needed (also used in first display).
-//    var newDir = document.getElementById('direction').value;
-  var newDir = 'rtl';
-  if (oldDir != newDir) {
-    if (previewWorkspace) {
-      previewWorkspace.dispose();
-    }
-    var rtl = newDir == 'rtl';
+  //    var newDir = document.getElementById('direction').value;
+ 
+
+  // THIS CODE IS HORRIBLE and UGLY. FIX IT. 
+  var xml = generateXml_();
+  var oldTree = '';
+  var oldHasCategories = false;
+  if (previewToolbox) {
+    oldTree = Blockly.parseToolboxTree_(previewToolbox);
+    oldHasCategories = oldTree.getElementsByTagName('category').length > 0; 
+  }  
+  var tree = Blockly.parseToolboxTree_(xml);
+
+  var newHasCategories = tree.getElementsByTagName('category').length > 0;
+  if (!previewWorkspace) {
     previewWorkspace = Blockly.inject('preview',
-        {rtl: rtl,
+        {ltr: 'ltr',
+         toolbox: xml,
          media: '../../media/',
          scrollbars: true});
-    oldDir = newDir;
-  }
-  previewWorkspace.clear();
 
-  // Fetch the code and determine its format (JSON or JavaScript).
-  var format = document.getElementById('format').value;
-  if (format == 'Manual') {
-    var code = document.getElementById('languageTA').value;
-    // If the code is JSON, it will parse, otherwise treat as JS.
-    try {
-      JSON.parse(code);
-      format = 'JSON';
-    } catch (e) {
-      format = 'JavaScript';
-    }
+  } else if ((oldHasCategories && !newHasCategories)
+    || (!oldHasCategories && newHasCategories)) {
+    // switch in category state (e.g. none to some) so have to reload the whole thing.
+    previewWorkspace.dispose();
+    previewWorkspace = Blockly.inject('preview',
+        {ltr: 'ltr',
+         toolbox: xml,
+         media: '../../media/',
+         scrollbars: true});
   } else {
-    var code = document.getElementById('languagePre').textContent;
+    previewWorkspace.updateToolbox(xml);
   }
-  if (!code.trim()) {
-    // Nothing to render.  Happens while cloud storage is loading.
-    return;
-  }
+  previewToolbox = xml;  
 
-  // Backup Blockly.Blocks object so that main workspace and preview don't
-  // collide if user creates a 'factory_base' block, for instance.
-  var backupBlocks = Blockly.Blocks;
-  try {
-    // Make a shallow copy.
-    Blockly.Blocks = {};
-    for (var prop in backupBlocks) {
-      Blockly.Blocks[prop] = backupBlocks[prop];
-    }
-
-    if (format == 'JSON') {
-      var json = JSON.parse(code);
-      Blockly.Blocks[json.id || UNNAMED] = {
-        init: function() {
-          this.jsonInit(json);
-        }
-      };
-    } else if (format == 'JavaScript') {
-      eval(code);
-    } else {
-      throw 'Unknown format: ' + format;
-    }
-
-    // Look for a block on Blockly.Blocks that does not match the backup.
-    var blockType = null;
-    for (var type in Blockly.Blocks) {
-      if (typeof Blockly.Blocks[type].init == 'function' &&
-          Blockly.Blocks[type] != backupBlocks[type]) {
-        blockType = type;
-        break;
-      }
-    }
-    if (!blockType) {
-      return;
-    }
-
-    // Create the preview block.
-    var previewBlock = previewWorkspace.newBlock(blockType);
-    previewBlock.initSvg();
-    previewBlock.render();
-    previewBlock.setMovable(false);
-    previewBlock.setDeletable(false);
-    previewBlock.moveBy(15, 10);
-
-    updateGenerator(previewBlock);
-  } finally {
-    Blockly.Blocks = backupBlocks;
-  }
+  // IGNORED MANUAL EDITS. FIX.
 }
 
 /**
@@ -843,14 +725,14 @@ function init() {
   }
 
   mainWorkspace.addChangeListener(updateLanguage);
-  // document.getElementById('direction')
-  //     .addEventListener('change', updatePreview);
+  document.getElementById('direction')
+       .addEventListener('change', updatePreview);
   document.getElementById('languageTA')
       .addEventListener('change', updatePreview);
   document.getElementById('languageTA')
       .addEventListener('keyup', updatePreview);
-  // // document.getElementById('format')
-  // //     .addEventListener('change', formatChange);
+   document.getElementById('format')
+      .addEventListener('change', formatChange);
   // document.getElementById('language')
   //     .addEventListener('change', updatePreview);
 }

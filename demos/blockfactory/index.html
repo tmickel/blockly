@@ -101,6 +101,12 @@
       <td width="50%" height="5%">
         <table>
           <tr>
+          <td style="vertical-align: bottom;">
+              <h3>Preview:
+                <select id="direction">
+                  <option value="ltr">LTR</option>
+                </select>
+              </h3>
             <td style="vertical-align: middle; text-align: right;">
               <button id="linkButton" title="Save and link to blocks.">
                 <img src="link.png" height="21" width="21">
@@ -124,28 +130,25 @@
       <td width="50%" height="95%">
         <table>
           <tr>
-            <td height="50%">
-              <div id="preview">Preview
-                
+            <td height="30%">
+              <div id="preview">
               </div>
-              <div style="float:right;">
-              <img src="toolbox.png"></div>
             </td>
           </tr>
           <tr>
             <td height="5%">
-              <h3>Toolbox XML</h3>
+              <h3>Language code:
+                <select id="format">
+                  <option value="XML">Xml</option>
+                  <option value="Manual">Manual edit...</option>
+                </select>
+              </h3>
             </td>
           </tr>
           <tr>
             <td height="30%">
               <pre id="languagePre"></pre>
               <textarea id="languageTA"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <td height="30%">
-              <pre id="generatorPre"></pre>
             </td>
           </tr>
         </table>
