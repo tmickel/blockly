@@ -128,6 +128,25 @@ Blockly.parseOptions_ = function(options) {
       hasSounds = true;
     }
   }
+  var rtl = !!options['rtl'];
+  var horizontalLayout = options['horizontalLayout'];
+  if (horizontalLayout === undefined) {
+    horizontalLayout = false;
+  }
+  var toolboxAtStart = options['toolboxPosition'];
+  if (toolboxAtStart === 'end') {
+    toolboxAtStart = false;
+  } else {
+    toolboxAtStart = true;
+  }
+
+  if (horizontalLayout) {
+    var toolboxPosition = toolboxAtStart ? Blockly.TOOLBOX_AT_TOP : Blockly.TOOLBOX_AT_BOTTOM;
+  } else {
+    var toolboxPosition =
+        (toolboxAtStart == rtl) ? Blockly.TOOLBOX_AT_RIGHT : Blockly.TOOLBOX_AT_LEFT;
+  }
+
   var hasScrollbars = options['scrollbars'];
   if (hasScrollbars === undefined) {
     hasScrollbars = hasCategories;
@@ -191,7 +210,7 @@ Blockly.parseOptions_ = function(options) {
   var realtimeOptions = enableRealtime ? options['realtimeOptions'] : undefined;
 
   return {
-    RTL: !!options['rtl'],
+    RTL: rtl,
     collapse: hasCollapse,
     comments: hasComments,
     disable: hasDisable,
@@ -203,11 +222,13 @@ Blockly.parseOptions_ = function(options) {
     hasTrashcan: hasTrashcan,
     hasSounds: hasSounds,
     hasCss: hasCss,
+    horizontalLayout: horizontalLayout,
     languageTree: languageTree,
     gridOptions: gridOptions,
     zoomOptions: zoomOptions,
     enableRealtime: enableRealtime,
-    realtimeOptions: realtimeOptions
+    realtimeOptions: realtimeOptions,
+    toolboxPosition: toolboxPosition
   };
 };
 
@@ -450,7 +471,7 @@ Blockly.init_ = function(mainWorkspace) {
       mainWorkspace.flyout_.show(options.languageTree.childNodes);
       // Translate the workspace sideways to avoid the fixed flyout.
       mainWorkspace.scrollX = mainWorkspace.flyout_.width_;
-      if (options.RTL) {
+      if (options.toolboxPosition == Blockly.TOOLBOX_AT_RIGHT) {
         mainWorkspace.scrollX *= -1;
       }
       mainWorkspace.translate(mainWorkspace.scrollX, 0);
