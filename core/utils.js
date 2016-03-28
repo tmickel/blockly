@@ -42,6 +42,7 @@ goog.require('goog.userAgent');
  * @private
  */
 Blockly.addClass_ = function(element, className) {
+  window.console.log('adding class: ' + className);
   var classes = element.getAttribute('class') || '';
   if ((' ' + classes + ' ').indexOf(' ' + className + ' ') == -1) {
     if (classes) {
@@ -391,7 +392,10 @@ Blockly.mouseToSvg = function(e, svg) {
   var svgPoint = svg.createSVGPoint();
   svgPoint.x = e.clientX;
   svgPoint.y = e.clientY;
-  var matrix = svg.getScreenCTM();
+  // This is expensive.
+  var matrix = Blockly.ctmMatrix_;
+  window.console.log('matrix: ' + matrix.a + ' ' + matrix.b + ' '+ matrix.c + ' '
+    + matrix.d + ' ' + matrix.e + ' ' + matrix.f);
   matrix = matrix.inverse();
   return svgPoint.matrixTransform(matrix);
 };
@@ -572,3 +576,4 @@ Blockly.genUid = function() {
  */
 Blockly.genUid.soup_ = '!#%()*+,-./:;=?@[]^_`{|}~' +
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+

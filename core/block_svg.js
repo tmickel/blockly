@@ -491,11 +491,11 @@ Blockly.BlockSvg.prototype.onMouseDown_ = function(e) {
   Blockly.setPageUnselectable();
   this.workspace.markFocused();
   // Update Blockly's knowledge of its own location.
-  Blockly.svgResize(this.workspace);
+  //  Blockly.svgResize(this.workspace);
   Blockly.terminateDrag_();
   this.select();
   Blockly.hideChaff();
-  this.workspace.recordDeleteAreas();
+//  this.workspace.recordDeleteAreas();
   if (Blockly.isRightButton(e)) {
     // Right-click.
     this.showContextMenu_(e);

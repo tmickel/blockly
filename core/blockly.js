@@ -113,6 +113,11 @@ Blockly.dragMode_ = 0;
 Blockly.onTouchUpWrapper_ = null;
 
 /**
+ *  try caching the screen ctm matrix.
+ */
+Blockly.ctmMatrix_ = null;
+
+/**
  * Convert a hue (HSV model) into an RGB hex triplet.
  * @param {number} hue Hue on a colour wheel (0-360).
  * @return {string} RGB code, e.g. '#5ba65b'.
@@ -148,13 +153,19 @@ Blockly.svgResize = function(workspace) {
     // Workspace deteted, or something.
     return;
   }
+  workspace.recordDeleteAreas();
+  Blockly.ctmMatrix_ = workspace.getParentSvg().getScreenCTM();
   var width = div.offsetWidth;
   var height = div.offsetHeight;
   if (svg.cachedWidth_ != width) {
+    window.console.log('cached width was out of date');
+    window.console.log(console.trace());
     svg.setAttribute('width', width + 'px');
     svg.cachedWidth_ = width;
   }
   if (svg.cachedHeight_ != height) {
+        window.console.log('cached height was out of date');
+            window.console.log(console.trace());
     svg.setAttribute('height', height + 'px');
     svg.cachedHeight_ = height;
   }

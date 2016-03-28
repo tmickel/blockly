@@ -315,6 +315,7 @@ Blockly.Toolbox.prototype.getClientRect = function() {
   var BIG_NUM = 10000000;
   // Assumes that the toolbox is on the SVG edge.  If this changes
   // (e.g. toolboxes in mutators) then this code will need to be more complex.
+  if (this.HtmlDiv) {
   var toolboxRect = this.HtmlDiv.getBoundingClientRect();
   if (this.workspace_.RTL) {
     var width = toolboxRect.left + toolboxRect.width + BIG_NUM;
@@ -323,6 +324,8 @@ Blockly.Toolbox.prototype.getClientRect = function() {
   // LTR
   var width = BIG_NUM + toolboxRect.width + toolboxRect.left;
   return new goog.math.Rect(-BIG_NUM, -BIG_NUM, width, BIG_NUM * 2);
+}
+return null;
 };
 
 // Extending Closure's Tree UI.
