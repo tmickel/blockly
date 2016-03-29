@@ -123,6 +123,11 @@ Blockly.BlockSvg.prototype.initSvg = function() {
  * Select this block.  Highlight it visually.
  */
 Blockly.BlockSvg.prototype.select = function() {
+  // Don't waste time unselecting and reselecting the same block.
+  // Do nothing instead :)
+  if (Blockly.selected && Blockly.selected == this) {
+     return;
+  }
   if (Blockly.selected) {
     // Unselect any previously selected block.
     Blockly.selected.unselect();
