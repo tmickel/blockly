@@ -42,7 +42,7 @@ goog.require('goog.userAgent');
  * @private
  */
 Blockly.addClass_ = function(element, className) {
-  window.console.log('adding class: ' + className);
+//  window.console.log('adding class: ' + className);
   var classes = element.getAttribute('class') || '';
   if ((' ' + classes + ' ').indexOf(' ' + className + ' ') == -1) {
     if (classes) {
