@@ -354,8 +354,8 @@ Blockly.createSvgElement = function(name, attrs, parent, opt_workspace) {
  */
 Blockly.setPageUnselectable = function() {
     // don't allow other things to be selected
-    var body = document.getElementsByTagName('body');
-    Blockly.addClass_(body[0], 'blocklyNonSelectable');
+    // var body = document.getElementsByTagName('body');
+    // Blockly.addClass_(body[0], 'blocklyNonSelectable');
 };
 
 /**
@@ -363,8 +363,8 @@ Blockly.setPageUnselectable = function() {
  * This is intended to be called at the end of some kind of drag event.
  */
 Blockly.setPageSelectable = function() {
-    var body = document.getElementsByTagName('body');
-    Blockly.removeClass_(body[0], 'blocklyNonSelectable');
+    // var body = document.getElementsByTagName('body');
+    // Blockly.removeClass_(body[0], 'blocklyNonSelectable');
 };
 
 /**
@@ -394,8 +394,8 @@ Blockly.mouseToSvg = function(e, svg) {
   svgPoint.y = e.clientY;
   // This is expensive.
   var matrix = Blockly.ctmMatrix_;
-  window.console.log('matrix: ' + matrix.a + ' ' + matrix.b + ' '+ matrix.c + ' '
-    + matrix.d + ' ' + matrix.e + ' ' + matrix.f);
+  // window.console.log('matrix: ' + matrix.a + ' ' + matrix.b + ' '+ matrix.c + ' '
+  //   + matrix.d + ' ' + matrix.e + ' ' + matrix.f);
   matrix = matrix.inverse();
   return svgPoint.matrixTransform(matrix);
 };
