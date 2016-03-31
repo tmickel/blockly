@@ -79,7 +79,7 @@ function start() {
            media: '../media/',
            readOnly: false,
            rtl: rtl,
-           scrollbars: true,
+           scrollbars: false,
            toolbox: toolbox,
            zoom:
              {controls: true,
@@ -241,7 +241,10 @@ h1 {
   float: right;
   height: 95%;
   width: 70%;
+  overflow:scroll;
+  -webkit-overflow-scrolling: touch;
 }
+
 #importExport {
   font-family: monospace;
 }
