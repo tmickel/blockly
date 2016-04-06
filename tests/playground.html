@@ -260,7 +260,10 @@ h1 {
   overflow:scroll;
   -webkit-overflow-scrolling: touch;
 }
-
+.buttonDiv {
+  padding:20px 0 10px 0;
+  margin:0;
+}
 .disable-hover {
   pointer-events: none;
 }
@@ -576,10 +579,12 @@ h1 {
     <category name="Functions" colour="290" custom="PROCEDURE"></category>
   </xml>
 
-  <div>
     Stress test: &nbsp;
-    <input type="button" value="Airstrike!" onclick="airstrike(200)">
-    <input type="button" value="Spaghetti!" onclick="spaghetti(8)">
-  </div>
+    <div class="buttonDiv">
+      <input type="button" value="Airstrike!" onclick="airstrike(200)">
+    </div>
+   <div class="buttonDiv">
+      <input type="button" value="Spaghetti!" onclick="spaghetti(8)">
+   </div>
 </body>
 </html>
