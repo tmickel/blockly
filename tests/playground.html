@@ -174,8 +174,8 @@ function airstrike(n) {
     var block = workspace.newBlock(prototype);
     block.initSvg();
     block.getSvgRoot().setAttribute('transform', 'translate(' +
-        Math.round(Math.random() * 450 + 40) + ', ' +
-        Math.round(Math.random() * 600 + 40) + ')');
+        Math.round(Math.random() * 1000 + 40) + ', ' +
+        Math.round(Math.random() * 1250 + 40) + ')');
     block.render();
   }
 }
@@ -608,7 +608,7 @@ h1 {
 
   <p>
     Stress test: &nbsp;
-    <input type="button" value="Airstrike!" onclick="airstrike(100)">
+    <input type="button" value="Airstrike!" onclick="airstrike(200)">
     <input type="button" value="addpointerclass" onclick="addpointerclass()">
     <input type="button" value="removepointerclass" onclick="removepointerclass()">
     <input type="button" value="Spaghetti!" onclick="spaghetti(8)">
