@@ -549,6 +549,7 @@ Blockly.BlockSvg.prototype.onMouseDown_ = function(e) {
   }
   // This event has been handled.  No need to bubble up to the document.
   e.stopPropagation();
+  e.preventDefault();
 };
 
 /**
@@ -599,6 +600,7 @@ Blockly.BlockSvg.prototype.onMouseUp_ = function(e) {
   if (!Blockly.WidgetDiv.isVisible()) {
     Blockly.Events.setGroup(false);
   }
+  e.preventDefault(); 
 };
 
 /**
@@ -886,6 +888,7 @@ Blockly.BlockSvg.prototype.onMouseMove_ = function(e) {
   }
   // This event has been handled.  No need to bubble up to the document.
   e.stopPropagation();
+  e.preventDefault();
 };
 
 /**

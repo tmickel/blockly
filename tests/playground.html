@@ -66,6 +66,7 @@ var workspace = null;
 
 function start() {
   var toolbox = document.getElementById('toolbox');
+
   workspace = Blockly.inject('blocklyDiv',
           {comments: true,
            disable: true,
@@ -179,6 +180,18 @@ function airstrike(n) {
   }
 }
 
+function addpointerclass() {
+    var div = document.getElementsByClassName('blocklySvg')[0];
+
+  div.classList.add('disable-hover');
+  window.console.log("scrolling & stuff");
+}
+function removepointerclass() {
+  var div = document.getElementsByClassName('blocklySvg')[0];
+  div.classList.add('disable-hover');
+  window.console.log("scrolling & stuff");
+}
+
 function spaghetti(n) {
   var xml = spaghettiXml;
   for(var i = 0; i < n; i++) {
@@ -241,17 +254,20 @@ h1 {
   float: right;
   height: 95%;
   width: 70%;
+  transform: translateZ(0);
   overflow:scroll;
   -webkit-overflow-scrolling: touch;
 }
 
+.disable-hover {
+  pointer-events: none;
+}
 #importExport {
   font-family: monospace;
 }
 </style>
 </head>
 <body onload="start()">
-
   <div id="blocklyDiv"></div>
 
   <xml id="toolbox" style="display: none">
@@ -593,6 +609,8 @@ h1 {
   <p>
     Stress test: &nbsp;
     <input type="button" value="Airstrike!" onclick="airstrike(100)">
+    <input type="button" value="addpointerclass" onclick="addpointerclass()">
+    <input type="button" value="removepointerclass" onclick="removepointerclass()">
     <input type="button" value="Spaghetti!" onclick="spaghetti(8)">
   </p>
   <p>

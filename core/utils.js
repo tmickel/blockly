@@ -120,7 +120,7 @@ Blockly.bindEvent_ = function(node, name, thisObject, func) {
       }
       func.call(thisObject, e);
       // Stop the browser from scrolling/zooming the page.
-      e.preventDefault();
+      //e.preventDefault();
     };
     for (var i = 0, eventName;
          eventName = Blockly.bindEvent_.TOUCH_MAP[name][i]; i++) {

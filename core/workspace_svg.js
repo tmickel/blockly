@@ -570,50 +570,50 @@ Blockly.WorkspaceSvg.prototype.isDeleteArea = function(e) {
  * @private
  */
 Blockly.WorkspaceSvg.prototype.onMouseDown_ = function(e) {
-  this.markFocused();
-  Blockly.setPageSelectable(false);
-  if (Blockly.isTargetInput_(e)) {
-    return;
-  }
-  Blockly.svgResize(this);
-  Blockly.terminateDrag_();  // In case mouse-up event was lost.
-  Blockly.hideChaff();
-  var isTargetWorkspace = e.target && e.target.nodeName &&
-      (e.target.nodeName.toLowerCase() == 'svg' ||
-       e.target == this.svgBackground_);
-  if (isTargetWorkspace && Blockly.selected && !this.options.readOnly) {
-    // Clicking on the document clears the selection.
-    Blockly.selected.unselect();
-  }
-  if (Blockly.isRightButton(e)) {
-    // Right-click.
-    this.showContextMenu_(e);
-  } else if (this.scrollbar) {
-    // If the workspace is editable, only allow scrolling when gripping empty
-    // space.  Otherwise, allow scrolling when gripping anywhere.
-    this.isScrolling = true;
-    // Record the current mouse position.
-    this.startDragMouseX = e.clientX;
-    this.startDragMouseY = e.clientY;
-    this.startDragMetrics = this.getMetrics();
-    this.startScrollX = this.scrollX;
-    this.startScrollY = this.scrollY;
+  // this.markFocused();
+  // Blockly.setPageSelectable(false);
+  // if (Blockly.isTargetInput_(e)) {
+  //   return;
+  // }
+  // Blockly.svgResize(this);
+  // Blockly.terminateDrag_();  // In case mouse-up event was lost.
+  // Blockly.hideChaff();
+  // var isTargetWorkspace = e.target && e.target.nodeName &&
+  //     (e.target.nodeName.toLowerCase() == 'svg' ||
+  //      e.target == this.svgBackground_);
+  // if (isTargetWorkspace && Blockly.selected && !this.options.readOnly) {
+  //   // Clicking on the document clears the selection.
+  //   Blockly.selected.unselect();
+  // }
+  // if (Blockly.isRightButton(e)) {
+  //   // Right-click.
+  //   this.showContextMenu_(e);
+  // } else if (this.scrollbar) {
+  //   // If the workspace is editable, only allow scrolling when gripping empty
+  //   // space.  Otherwise, allow scrolling when gripping anywhere.
+  //   this.isScrolling = true;
+  //   // Record the current mouse position.
+  //   this.startDragMouseX = e.clientX;
+  //   this.startDragMouseY = e.clientY;
+  //   this.startDragMetrics = this.getMetrics();
+  //   this.startScrollX = this.scrollX;
+  //   this.startScrollY = this.scrollY;
 
-    // If this is a touch event then bind to the mouseup so workspace drag mode
-    // is turned off and double move events are not performed on a block.
-    // See comment in inject.js Blockly.init_ as to why mouseup events are
-    // bound to the document instead of the SVG's surface.
-    if ('mouseup' in Blockly.bindEvent_.TOUCH_MAP) {
-      Blockly.onTouchUpWrapper_ = Blockly.onTouchUpWrapper_ || [];
-      Blockly.onTouchUpWrapper_ = Blockly.onTouchUpWrapper_.concat(
-          Blockly.bindEvent_(document, 'mouseup', null, Blockly.onMouseUp_));
-    }
-    Blockly.onMouseMoveWrapper_ = Blockly.onMouseMoveWrapper_ || [];
-    Blockly.onMouseMoveWrapper_ = Blockly.onMouseMoveWrapper_.concat(
-        Blockly.bindEvent_(document, 'mousemove', null, Blockly.onMouseMove_));
-  }
+  //   // If this is a touch event then bind to the mouseup so workspace drag mode
+  //   // is turned off and double move events are not performed on a block.
+  //   // See comment in inject.js Blockly.init_ as to why mouseup events are
+  //   // bound to the document instead of the SVG's surface.
+  //   if ('mouseup' in Blockly.bindEvent_.TOUCH_MAP) {
+  //     Blockly.onTouchUpWrapper_ = Blockly.onTouchUpWrapper_ || [];
+  //     Blockly.onTouchUpWrapper_ = Blockly.onTouchUpWrapper_.concat(
+  //         Blockly.bindEvent_(document, 'mouseup', null, Blockly.onMouseUp_));
+  //   }
+  //   Blockly.onMouseMoveWrapper_ = Blockly.onMouseMoveWrapper_ || [];
+  //   Blockly.onMouseMoveWrapper_ = Blockly.onMouseMoveWrapper_.concat(
+  //       Blockly.bindEvent_(document, 'mousemove', null, Blockly.onMouseMove_));
+  // }
   // This event has been handled.  No need to bubble up to the document.
-  e.stopPropagation();
+//  e.stopPropagation();
 };
 
 /**
