@@ -2,6 +2,8 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
+
 <title>Blockly Playground</title>
 <script src="../blockly_uncompressed.js"></script>
 <script src="../generators/javascript.js"></script>
@@ -92,19 +94,19 @@ function start() {
              },
           });
   // Restore previously displayed text.
-  if (sessionStorage) {
-    var text = sessionStorage.getItem('textarea');
-    if (text) {
-      document.getElementById('importExport').value = text;
-    }
-    // Restore event logging state.
-    var state = sessionStorage.getItem('logEvents');
-    logEvents(Boolean(Number(state)));
-  } else {
-    // MSIE 11 does not support sessionStorage on file:// URLs.
-    logEvents(false);
-  }
-  taChange();
+  // if (sessionStorage) {
+  //   var text = sessionStorage.getItem('textarea');
+  //   if (text) {
+  //     document.getElementById('importExport').value = text;
+  //   }
+  //   // Restore event logging state.
+//    var state = sessionStorage.getItem('logEvents');
+//    logEvents(Boolean(Number(state)));
+  // } else {
+  //   // MSIE 11 does not support sessionStorage on file:// URLs.
+  //   logEvents(false);
+  // }
+  // taChange();
 }
 
 function toXml() {
@@ -253,7 +255,7 @@ h1 {
 #blocklyDiv {
   float: right;
   height: 95%;
-  width: 70%;
+  width: 85%;
   transform: translateZ(0);
   overflow:scroll;
   -webkit-overflow-scrolling: touch;
@@ -574,49 +576,10 @@ h1 {
     <category name="Functions" colour="290" custom="PROCEDURE"></category>
   </xml>
 
-  <h1>Blockly Playground</h1>
-
-  <p><a href="javascript:void(workspace.setVisible(true))">Show</a>
-   - <a href="javascript:void(workspace.setVisible(false))">Hide</a></p>
-
-  <script>
-    if (rtl) {
-      document.write('[ &larr; RTL. Switch to <A HREF="?ltr">LTR</A>. ]');
-    } else {
-      document.write('[ &rarr; LTR. Switch to <A HREF="?rtl">RTL</A>. ]');
-    }
-  </script>
-
-  <p>
-    <input type="button" value="Export to XML" onclick="toXml()">
-    &nbsp;
-    <input type="button" value="Import from XML" onclick="fromXml()" id="import">
-    <br>
-    <input type="button" value="To JavaScript" onclick="toCode('JavaScript')">
-    &nbsp;
-    <input type="button" value="To Python" onclick="toCode('Python')">
-    &nbsp;
-    <input type="button" value="To PHP" onclick="toCode('PHP')">
-    &nbsp;
-    <input type="button" value="To Dart" onclick="toCode('Dart')">
-    &nbsp;
-    <input type="button" value="To Lua" onclick="toCode('Lua')">
-    <br>
-    <textarea id="importExport" style="width: 26%; height: 12em"
-      onchange="taChange();" onkeyup="taChange()"></textarea>
-  </p>
-
-  <p>
+  <div>
     Stress test: &nbsp;
     <input type="button" value="Airstrike!" onclick="airstrike(200)">
-    <input type="button" value="addpointerclass" onclick="addpointerclass()">
-    <input type="button" value="removepointerclass" onclick="removepointerclass()">
     <input type="button" value="Spaghetti!" onclick="spaghetti(8)">
-  </p>
-  <p>
-    Log events: &nbsp;
-    <input type="checkbox" onclick="logEvents(this.checked)" id="logCheck">
-  </p>
-
+  </div>
 </body>
 </html>

@@ -600,7 +600,7 @@ Blockly.BlockSvg.prototype.onMouseUp_ = function(e) {
   if (!Blockly.WidgetDiv.isVisible()) {
     Blockly.Events.setGroup(false);
   }
-  e.preventDefault(); 
+//  e.preventDefault(); 
 };
 
 /**
