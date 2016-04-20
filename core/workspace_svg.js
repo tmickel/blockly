@@ -139,6 +139,36 @@ Blockly.WorkspaceSvg.prototype.trashcan = null;
 Blockly.WorkspaceSvg.prototype.scrollbar = null;
 
 /**
+ *
+ * @return {Array<!Element>} The workspace's SVG group.
+ */
+Blockly.WorkspaceSvg.prototype.createTrashLayer = function() {
+  var docFragment = document.createDocumentFragment();
+
+  var bottom = Blockly.Scrollbar.scrollbarThickness;
+
+  var svgTrashcan = null; 
+  if (this.options.hasTrashcan) {
+    this.trashcan = new Blockly.Trashcan(this);
+    svgTrashcan = this.trashcan.createDom();
+    //trashLayer.appendChild(svgTrashcan);
+    // figure out what bottom should be. Need to know whether there are scrollbars
+    // and zoom buttons. Just setting to 10 for now.
+    bottom = this.trashcan.init(bottom);
+    docFragment.appendChild(svgTrashcan);
+  }
+  if (this.options.zoomOptions && this.options.zoomOptions.controls) {
+      /** @type {Blockly.ZoomControls} */
+    this.zoomControls_ = new Blockly.ZoomControls(this);
+    var svgZoomControls = this.zoomControls_.createDom();
+//    trashLayer.appendChild(svgZoomControls);
+    this.zoomControls_.init(bottom);
+    docFragment.appendChild(svgZoomControls);
+  }
+
+  return docFragment;
+};
+/**
  * Create the workspace DOM elements.
  * @param {string=} opt_backgroundClass Either 'blocklyMainBackground' or
  *     'blocklyMutatorBackground'.
@@ -155,6 +185,14 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
    * </g>
    * @type {SVGElement}
    */
+
+   /**  what i really want:
+    * <g class="blocklyWorkspace">
+    *   <rect class="blocklyMainBackground" height...
+    * <g blockcanvas
+      <g block bubble
+    *
+  */
   this.svgGroup_ = Blockly.createSvgElement('g',
       {'class': 'blocklyWorkspace'}, null);
   if (opt_backgroundClass) {
@@ -173,13 +211,7 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
   /** @type {SVGElement} */
   this.svgBubbleCanvas_ = Blockly.createSvgElement('g',
       {'class': 'blocklyBubbleCanvas'}, this.svgGroup_, this);
-  var bottom = Blockly.Scrollbar.scrollbarThickness;
-  if (this.options.hasTrashcan) {
-    bottom = this.addTrashcan_(bottom);
-  }
-  if (this.options.zoomOptions && this.options.zoomOptions.controls) {
-    bottom = this.addZoomControls_(bottom);
-  }
+
   Blockly.bindEvent_(this.svgGroup_, 'mousedown', this, this.onMouseDown_);
   var thisWorkspace = this;
   Blockly.bindEvent_(this.svgGroup_, 'touchstart', null,
@@ -197,6 +229,7 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
     this.addFlyout_();
   }
   this.updateGridPattern_();
+
   return this.svgGroup_;
 };
 
@@ -262,7 +295,8 @@ Blockly.WorkspaceSvg.prototype.addTrashcan_ = function(bottom) {
   /** @type {Blockly.Trashcan} */
   this.trashcan = new Blockly.Trashcan(this);
   var svgTrashcan = this.trashcan.createDom();
-  this.svgGroup_.insertBefore(svgTrashcan, this.svgBlockCanvas_);
+
+//  this.svgGroup_.insertBefore(svgTrashcan, this.svgBlockCanvas_);
   return this.trashcan.init(bottom);
 };
 
