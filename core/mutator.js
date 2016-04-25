@@ -128,6 +128,12 @@ Blockly.Mutator.prototype.createEditor_ = function() {
   this.workspace_ = new Blockly.WorkspaceSvg(workspaceOptions);
   this.svgDialog_.appendChild(
       this.workspace_.createDom('blocklyMutatorBackground'));
+
+  var trashLayer = this.workspace_.createTrashLayer();
+  if (trashLayer) {
+    this.svgDialog_.appendChild(trashLayer);
+  }
+
   return this.svgDialog_;
 };
 

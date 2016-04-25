@@ -166,6 +166,15 @@ Blockly.WorkspaceSvg.prototype.createTrashLayer = function() {
     docFragment.appendChild(svgZoomControls);
   }
 
+  // Determine if there needs to be a category tree, or a simple list of
+  // blocks.  This cannot be changed later, since the UI is very different.
+  if (this.options.hasCategories) {
+    this.toolbox_ = new Blockly.Toolbox(this);
+  } else if (this.options.languageTree) {
+    var flyoutSvg = this.addFlyout_();
+    docFragment.appendChild(flyoutSvg);
+  }
+
   return docFragment;
 };
 /**
@@ -219,14 +228,6 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
   if (this.options.zoomOptions && this.options.zoomOptions.wheel) {
     // Mouse-wheel.
     Blockly.bindEvent_(this.svgGroup_, 'wheel', this, this.onMouseWheel_);
-  }
-
-  // Determine if there needs to be a category tree, or a simple list of
-  // blocks.  This cannot be changed later, since the UI is very different.
-  if (this.options.hasCategories) {
-    this.toolbox_ = new Blockly.Toolbox(this);
-  } else if (this.options.languageTree) {
-    this.addFlyout_();
   }
   this.updateGridPattern_();
 
@@ -316,6 +317,7 @@ Blockly.WorkspaceSvg.prototype.addZoomControls_ = function(bottom) {
 
 /**
  * Add a flyout.
+ * @return {Element} The svg element for the flyout.
  * @private
  */
 Blockly.WorkspaceSvg.prototype.addFlyout_ = function() {
@@ -327,8 +329,9 @@ Blockly.WorkspaceSvg.prototype.addFlyout_ = function() {
   /** @type {Blockly.Flyout} */
   this.flyout_ = new Blockly.Flyout(workspaceOptions);
   this.flyout_.autoClose = false;
-  var svgFlyout = this.flyout_.createDom();
-  this.svgGroup_.insertBefore(svgFlyout, this.svgBlockCanvas_);
+  var flyoutSvg = this.flyout_.createDom();
+  return flyoutSvg;
+  //this.svgGroup_.insertBefore(svgFlyout, this.svgBlockCanvas_);
 };
 
 /**
@@ -393,10 +396,19 @@ Blockly.WorkspaceSvg.prototype.getParentSvg = function() {
  * @param {number} y Vertical translation.
  */
 Blockly.WorkspaceSvg.prototype.translate = function(x, y) {
-  var translation = 'translate(' + x + ',' + y + ') ' +
-      'scale(' + this.scale + ')';
-  this.svgBlockCanvas_.setAttribute('transform', translation);
-  this.svgBubbleCanvas_.setAttribute('transform', translation);
+
+  // var translation = 'translate(' + x + ',' + y + ') ' +
+  //     'scale(' + this.scale + ')';
+  //  this.svgBlockCanvas_.setAttribute('transform', translation);
+  //  this.svgBubbleCanvas_.setAttribute('transform', translation);
+
+  // put scale back in
+  var newTranslationWithoutScale = 'translate3d(' + x + 'px,' + y + 'px,0px)';
+  var newTranslationWithScale = 'translate3d(' + x + 'px,' + y + 'px,0px) scale(' + this.scale + ')';
+//  this.svgBlockCanvas_.style.transform = newTranslation;
+//  this.svgBubbleCanvas_.style.transform = newTranslation;
+  var parent = this.getParentSvg();
+  parent.style.transform = newTranslationWithScale;
 };
 
 /**

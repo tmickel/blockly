@@ -131,7 +131,7 @@ Blockly.Flyout.prototype.createDom = function() {
     <g class="blocklyFlyout"></g>
   </g>
   */
-  this.svgGroup_ = Blockly.createSvgElement('g',
+  this.svgGroup_ = Blockly.createSvgElement('svg',
       {'class': 'blocklyFlyout'}, null);
   this.svgBackground_ = Blockly.createSvgElement('path',
       {'class': 'blocklyFlyoutBackground'}, this.svgGroup_);
@@ -283,8 +283,13 @@ Blockly.Flyout.prototype.position = function() {
     x += metrics.viewWidth;
     x -= this.width_;
   }
-  this.svgGroup_.setAttribute('transform',
-      'translate(' + x + ',' + metrics.absoluteTop + ')');
+  // this.svgGroup_.setAttribute('transform',
+  //     'translate(' + x + ',' + metrics.absoluteTop + ')');
+
+  var newTranslation = 'translate3d(' + x + 'px,' + metrics.absoluteTop + 'px,0px)';
+  this.svgGroup_.style.transform = newTranslation;
+  this.svgGroup_.style.height = this.height_ + 'px';
+  this.svgGroup_.style.width = this.width_ + 'px';
 
   // Record the height for Blockly.Flyout.getMetrics_.
   this.height_ = metrics.viewHeight;

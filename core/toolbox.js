@@ -123,7 +123,8 @@ Blockly.Toolbox.prototype.init = function() {
    * @private
    */
   this.flyout_ = new Blockly.Flyout(workspaceOptions);
-  goog.dom.insertSiblingAfter(this.flyout_.createDom(), workspace.svgGroup_);
+  goog.dom.insertSiblingAfter(this.flyout_.createDom(),
+    document.getElementsByClassName('blocklySvg')[0]);
   this.flyout_.init(workspace);
 
   this.CONFIG_['cleardotPath'] = workspace.options.pathToMedia + '1x1.gif';

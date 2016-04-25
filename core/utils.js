@@ -253,6 +253,9 @@ Blockly.isTargetInput_ = function(e) {
  */
 Blockly.getRelativeXY_ = function(element) {
   var xy = new goog.math.Coordinate(0, 0);
+  if (!element) {
+    window.console.log('element isn not defined');
+  }
   // First, check for x and y attributes.
   var x = element.getAttribute('x');
   if (x) {
@@ -264,12 +267,24 @@ Blockly.getRelativeXY_ = function(element) {
   }
   // Second, check for transform="translate(...)" attribute.
   var transform = element.getAttribute('transform');
-  var r = transform && transform.match(Blockly.getRelativeXY_.XY_REGEXP_);
-  if (r) {
-    xy.x += parseFloat(r[1]);
-    if (r[3]) {
-      xy.y += parseFloat(r[3]);
+  if (transform) {
+    var r = transform && transform.match(Blockly.getRelativeXY_.XY_REGEXP_);
+    if (r) {
+      xy.x += parseFloat(r[1]);
+      if (r[3]) {
+        xy.y += parseFloat(r[3]);
+      }
     }
+  }
+
+  var threeDTrans = element.style.transform;
+  if (threeDTrans) {
+    var parts = /translate3d\(\s*([^\s,)]+)[ ,\s]+([^\s,)]+)/.exec(threeDTrans);
+    var xPx = parts[1];
+    var yPx = parts[2];
+    xy.x = xPx.substring(0, xPx.length -2);
+    xy.y = yPx.substring(0, yPx.length -2);
+
   }
   return xy;
 };
@@ -299,6 +314,7 @@ Blockly.getSvgXY_ = function(element, workspace) {
   var x = 0;
   var y = 0;
   var scale = 1;
+  window.console.log('getSvgXy element: ' + element.classList);
   if (goog.dom.contains(workspace.getCanvas(), element) ||
       goog.dom.contains(workspace.getBubbleCanvas(), element)) {
     // Before the SVG canvas, scale the coordinates.
@@ -315,7 +331,9 @@ Blockly.getSvgXY_ = function(element, workspace) {
     x += xy.x * scale;
     y += xy.y * scale;
     element = element.parentNode;
-  } while (element && element != workspace.getParentSvg());
+    // This works assuming the flyout sits right on top of the workspace.
+    // Realistically it doesn't in the demo. Should it? Come back and look at this.
+  } while (element && element.nodeName != 'svg');
   return new goog.math.Coordinate(x, y);
 };
 
