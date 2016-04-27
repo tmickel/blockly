@@ -196,7 +196,11 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
     *
   */
   this.svgGroup_ = Blockly.createSvgElement('g',
-      {'class': 'blocklyWorkspace'}, null);
+      {'class': 'blocklyWorkspace',
+//       'width': '1000',
+//       'height': '1000'
+      },
+       null);
   if (opt_backgroundClass) {
     /** @type {SVGElement} */
     this.svgBackground_ = Blockly.createSvgElement('rect',
@@ -400,10 +404,14 @@ Blockly.WorkspaceSvg.prototype.translate = function(x, y) {
   // put scale back in
   var newTranslationWithoutScale = 'translate3d(' + x + 'px,' + y + 'px,0px)';
   var newTranslationWithScale = 'translate3d(' + x + 'px,' + y + 'px,0px) scale(' + this.scale + ')';
-//  this.svgBlockCanvas_.style.transform = newTranslation;
-//  this.svgBubbleCanvas_.style.transform = newTranslation;
-  var parent = this.getParentSvg();
-  parent.style.transform = newTranslationWithScale;
+  // For the flyout, move the block/bubbles, for the main workspace, move the whole svg.
+  if (this.isFlyout) {
+    this.svgBlockCanvas_.style.transform = newTranslationWithScale;
+    this.svgBubbleCanvas_.style.transform = newTranslationWithScale;
+  } else {
+    var parent = this.getParentSvg();
+    parent.style.transform = newTranslationWithScale;
+  }
 };
 
 /**
@@ -1040,6 +1048,7 @@ Blockly.WorkspaceSvg.prototype.zoom = function(x, y, type) {
     return;  // No change in zoom.
   }
   if (this.scrollbar) {
+    // Take a look at this code. seems off.
     var matrix = canvas.getCTM()
         .translate(x * (1 - scaleChange), y * (1 - scaleChange))
         .scale(scaleChange);
