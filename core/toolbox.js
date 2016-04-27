@@ -162,17 +162,21 @@ Blockly.Toolbox.prototype.position = function() {
     // Not initialized yet.
     return;
   }
+  // position toolbox relative to blockly div instead of svg since the
+  // svg now moves while the div is fixed.
   var svg = this.workspace_.getParentSvg();
-  var svgPosition = goog.style.getPageOffset(svg);
+  var divContainer = goog.dom.getParentElement(svg);
+
+  var divPosition = goog.style.getPageOffset(divContainer);
   var svgSize = Blockly.svgSize(svg);
   if (this.workspace_.RTL) {
     treeDiv.style.left =
-        (svgPosition.x + svgSize.width - treeDiv.offsetWidth) + 'px';
+        (divPosition.x + svgSize.width - treeDiv.offsetWidth) + 'px';
   } else {
-    treeDiv.style.left = svgPosition.x + 'px';
+    treeDiv.style.left = divPosition.x + 'px';
   }
   treeDiv.style.height = svgSize.height + 'px';
-  treeDiv.style.top = svgPosition.y + 'px';
+  treeDiv.style.top =  divPosition.y + 'px';
   this.width = treeDiv.offsetWidth;
   if (!this.workspace_.RTL) {
     // For some reason the LTR toolbox now reports as 1px too wide.
