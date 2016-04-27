@@ -327,6 +327,10 @@ Blockly.Scrollbar.prototype.resize = function(opt_metrics) {
     if (!this.workspace_.RTL) {
       this.xCoordinate += hostMetrics.viewWidth -
           Blockly.Scrollbar.scrollbarThickness - 1;
+          //horrible hack
+           if (this.workspace_.isFlyout) {
+             this.xCoordinate += Blockly.getMainWorkspace().toolbox_.width;
+           }
     }
     this.yCoordinate = hostMetrics.absoluteTop + 0.5;
     var newTranslation = 'translate3d(' + this.xCoordinate + 'px,' + this.yCoordinate + 'px,0px)';
