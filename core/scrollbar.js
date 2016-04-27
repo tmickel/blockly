@@ -327,9 +327,14 @@ Blockly.Scrollbar.prototype.resize = function(opt_metrics) {
     if (!this.workspace_.RTL) {
       this.xCoordinate += hostMetrics.viewWidth -
           Blockly.Scrollbar.scrollbarThickness - 1;
-          //horrible hack
-           if (this.workspace_.isFlyout && this.workspace_.toolbox_) {
+           //horrible hack
+           // Add with of toolbox if it exists, otherwise, thickness of scrollbar
+           if (this.workspace_.isFlyout) {
+            if (Blockly.getMainWorkspace().toolbox_) {
              this.xCoordinate += Blockly.getMainWorkspace().toolbox_.width;
+             } else {
+              this.xCoordinate += Blockly.Scrollbar.scrollbarThickness;
+             }
            }
     }
     this.yCoordinate = hostMetrics.absoluteTop + 0.5;
