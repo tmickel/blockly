@@ -104,7 +104,8 @@ Blockly.Trashcan.prototype.SPRITE_TOP_ = 32;
 Blockly.Trashcan.prototype.isOpen = false;
 
 /**
- * The SVG group containing the trash can.
+ * The SVG containing the trash can.
+ * // RENAME ME!
  * @type {Element}
  * @private
  */
@@ -150,22 +151,13 @@ Blockly.Trashcan.prototype.top_ = 0;
  * @return {!Element} The trash can's SVG group.
  */
 Blockly.Trashcan.prototype.createDom = function() {
-  /* Here's the markup that will be generated:
-  <g class="blocklyTrash">
-    <clippath id="blocklyTrashBodyClipPath837493">
-      <rect width="47" height="45" y="15"></rect>
-    </clippath>
-    <image width="64" height="92" y="-32" xlink:href="media/sprites.png"
-        clip-path="url(#blocklyTrashBodyClipPath837493)"></image>
-    <clippath id="blocklyTrashLidClipPath837493">
-      <rect width="47" height="15"></rect>
-    </clippath>
-    <image width="84" height="92" y="-32" xlink:href="media/sprites.png"
-        clip-path="url(#blocklyTrashLidClipPath837493)"></image>
-  </g>
-  */
-  this.svgGroup_ = Blockly.createSvgElement('g',
-      {'class': 'blocklyTrash'}, null);
+  // setting the width and height keep the svg from being too big, but
+  // the animation of the lid currently goes outside of the svg. fix.
+  // The edges of the svg are wierd and visible.
+  this.svgGroup_ = Blockly.createSvgElement('svg',
+      {'class': 'blocklyTrash',
+       'height': this.LID_HEIGHT_ + this.BODY_HEIGHT_,
+       'width': this.WIDTH_}, null);
   var rnd = String(Math.random()).substring(2);
   var clip = Blockly.createSvgElement('clipPath',
       {'id': 'blocklyTrashBodyClipPath' + rnd},
@@ -256,8 +248,10 @@ Blockly.Trashcan.prototype.position = function() {
   if (metrics.toolboxPosition == Blockly.TOOLBOX_AT_BOTTOM) {
     this.top_ -= metrics.flyoutHeight;
   }
-  this.svgGroup_.setAttribute('transform',
-      'translate(' + this.left_ + ',' + this.top_ + ')');
+  
+  // translate 3d won't always work. FIx.
+  var newTranslation = 'translate3d(' + this.left_ + 'px,' + this.top_ + 'px,0px)';
+  this.svgGroup_.style.transform = newTranslation;
 };
 
 /**
@@ -293,18 +287,19 @@ Blockly.Trashcan.prototype.setOpen_ = function(state) {
  * @private
  */
 Blockly.Trashcan.prototype.animateLid_ = function() {
-  this.lidOpen_ += this.isOpen ? 0.2 : -0.2;
-  this.lidOpen_ = goog.math.clamp(this.lidOpen_, 0, 1);
-  var lidAngle = this.lidOpen_ * 45;
-  this.svgLid_.setAttribute('transform', 'rotate(' +
-      (this.workspace_.RTL ? -lidAngle : lidAngle) + ',' +
-      (this.workspace_.RTL ? 4 : this.WIDTH_ - 4) + ',' +
-      (this.LID_HEIGHT_ - 2) + ')');
-  var opacity = goog.math.lerp(0.4, 0.8, this.lidOpen_);
-  this.svgGroup_.style.opacity = opacity;
-  if (this.lidOpen_ > 0 && this.lidOpen_ < 1) {
-    this.lidTask_ = goog.Timer.callOnce(this.animateLid_, 20, this);
-  }
+   this.lidOpen_ += this.isOpen ? 0.2 : -0.2;
+   this.lidOpen_ = goog.math.clamp(this.lidOpen_, 0, 1);
+   var lidAngle = this.lidOpen_ * 45;
+   // FIX THIS? Lid animation is weird. 
+   this.svgLid_.setAttribute('transform', 'rotate(' +
+       (this.workspace_.RTL ? -lidAngle : lidAngle) + ',' +
+       (this.workspace_.RTL ? 4 : this.WIDTH_ - 4) + ',' +
+       (this.LID_HEIGHT_ - 2) + ')');
+   var opacity = goog.math.lerp(0.4, 0.8, this.lidOpen_);
+   this.svgGroup_.style.opacity = opacity;
+   if (this.lidOpen_ > 0 && this.lidOpen_ < 1) {
+     this.lidTask_ = goog.Timer.callOnce(this.animateLid_, 20, this);
+   }
 };
 
 /**
