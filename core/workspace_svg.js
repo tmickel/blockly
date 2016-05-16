@@ -410,6 +410,10 @@ Blockly.WorkspaceSvg.prototype.translate = function(x, y) {
     this.svgBubbleCanvas_.style.transform = newTranslationWithScale;
   } else {
     var parent = this.getParentSvg();
+    // var metrics = this.getMetrics();
+    // var adjustedX = x - metrics.contentWidth/2.0;
+    // var adjustedY = y - metrics.contentHeight/2.0;
+    // var adjustedTranslation = 'translate3d(' + adjustedX + 'px,' + adjustedY + 'px,0px) scale(' + this.scale + ')';
     parent.style.transform = newTranslationWithScale;
   }
 };

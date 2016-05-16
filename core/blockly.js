@@ -181,16 +181,29 @@ Blockly.svgResize = function(workspace) {
     // Workspace deleted, or something.
     return;
   }
-  var width = div.offsetWidth;
-  var height = div.offsetHeight;
-  if (svg.cachedWidth_ != width) {
-    svg.setAttribute('width', width + 'px');
-    svg.cachedWidth_ = width;
+  var divWidth = div.offsetWidth;
+  var divHeight = div.offsetHeight;
+
+  // svg width should be 
+  var somethingChanged = false;
+  if (svg.cachedWidth_ != divWidth) {
+    svg.setAttribute('width', divWidth + 'px');
+    //svg.setAttribute('width', width + 'px');
+    svg.cachedWidth_ = divWidth;
+    somethingChanged = true;
   }
-  if (svg.cachedHeight_ != height) {
-    svg.setAttribute('height', height + 'px');
-    svg.cachedHeight_ = height;
+  if (svg.cachedHeight_ != divHeight) {
+    svg.setAttribute('height', divHeight + 'px');
+    svg.cachedHeight_ = divHeight;
+    somethingChanged = true;
   }
+
+  // I think content height is the right thing
+  var metrics = mainWorkspace.getMetrics();
+  //window.console.log('width' + metrics.contentWidth);
+  svg.setAttribute('width', 4*metrics.contentHeight);
+  svg.setAttribute('height', 4*metrics.contentWidth); 
+
   mainWorkspace.resize();
 };
 
@@ -458,7 +471,9 @@ Blockly.getMainWorkspaceMetrics_ = function() {
   }
   // Set the margin to match the flyout's margin so that the workspace does
   // not jump as blocks are added.
-  var MARGIN = Blockly.Flyout.prototype.CORNER_RADIUS - 1;
+  //var MARGIN = Blockly.Flyout.prototype.CORNER_RADIUS - 1;
+  var MARGIN = 0;
+  //window.console.log('dont forget. setting margin to 0');
   var viewWidth = svgSize.width - MARGIN;
   var viewHeight = svgSize.height - MARGIN;
   var blockBox = this.getBlocksBoundingBox();
@@ -486,6 +501,7 @@ Blockly.getMainWorkspaceMetrics_ = function() {
     var bottomEdge = topEdge + blockBox.height;
   }
   var absoluteLeft = 0;
+
   if (this.toolbox_ && this.toolboxPosition == Blockly.TOOLBOX_AT_LEFT) {
     absoluteLeft = this.toolbox_.getWidth();
   }
@@ -537,14 +553,14 @@ Blockly.setMainWorkspaceMetrics_ = function(xyRatio) {
   this.translate(x, y);
   // I think this is unnecessary when moving the svg containing the dots
   // since the dots move along with the svg.
-  // if (this.options.gridPattern) {
-  //   this.options.gridPattern.setAttribute('x', x);
-  //   this.options.gridPattern.setAttribute('y', y);
-  //   if (goog.userAgent.IE) {
-  //     // IE doesn't notice that the x/y offsets have changed.  Force an update.
-  //     this.updateGridPattern_();
-  //   }
-  // }
+   if (this.options.gridPattern) {
+     // this.options.gridPattern.setAttribute('x', x);
+     // this.options.gridPattern.setAttribute('y', y);
+     if (goog.userAgent.IE) {
+       // IE doesn't notice that the x/y offsets have changed.  Force an update.
+       this.updateGridPattern_();
+     }
+   }
 };
 
 /**
