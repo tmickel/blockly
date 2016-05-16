@@ -235,7 +235,6 @@ Blockly.Toolbox.prototype.position = function() {
 
   var divPosition = goog.style.getPageOffset(divContainer);
   var svgSize = Blockly.svgSize(svg);
-<<<<<<< HEAD
   if (this.horizontalLayout_) {
     treeDiv.style.left = divPosition.x + 'px';
     treeDiv.style.height = 'auto';
