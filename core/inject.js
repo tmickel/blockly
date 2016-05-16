@@ -93,7 +93,9 @@ Blockly.createDom_ = function(container, options) {
     'xmlns:html': 'http://www.w3.org/1999/xhtml',
     'xmlns:xlink': 'http://www.w3.org/1999/xlink',
     'version': '1.1',
-    'class': 'blocklySvg'
+    'class': 'blocklySvg',
+    'width': '0',
+    'height': '0',
   }, container);
 
   /*
