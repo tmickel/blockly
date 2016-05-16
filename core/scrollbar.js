@@ -350,7 +350,7 @@ Blockly.Scrollbar.prototype.resizeVertical_ = function(hostMetrics) {
   if (!this.workspace_.RTL) {
     this.xCoordinate += hostMetrics.viewWidth -
         Blockly.Scrollbar.scrollbarThickness - 1;
-        if (this.workspace_.isFlyout) {
+        if (this.workspace_.isFlyout && this.workspace_.toolbox_) {
           this.xCoordinate += Blockly.getMainWorkspace().toolbox_.width;
         }
   }
