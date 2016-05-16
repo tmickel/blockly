@@ -128,8 +128,8 @@ Blockly.hueToRgb = function(hue) {
  * @return {!Object} Contains width and height properties.
  */
 Blockly.svgSize = function(svg) {
-  return {width: svg.cachedWidth_,
-          height: svg.cachedHeight_};
+  return {width: svg.containerWidth_,
+          height: svg.containerHeight_};
 };
 
 /**
@@ -153,23 +153,22 @@ Blockly.svgResize = function(workspace) {
 
   // svg width should be 
   var somethingChanged = false;
-  if (svg.cachedWidth_ != divWidth) {
-    svg.setAttribute('width', divWidth + 'px');
-    //svg.setAttribute('width', width + 'px');
-    svg.cachedWidth_ = divWidth;
+  if (svg.containerWidth_ != divWidth) {
+    svg.containerWidth_ = divWidth;
     somethingChanged = true;
   }
-  if (svg.cachedHeight_ != divHeight) {
-    svg.setAttribute('height', divHeight + 'px');
-    svg.cachedHeight_ = divHeight;
+  if (svg.containerHeight_ != divHeight) {
+    svg.containerHeight_ = divHeight;
     somethingChanged = true;
   }
 
-  // I think content height is the right thing
+  // we want the width and height be be 2x the container height (- size of toolbox/flyout)
+  // todo add in flyout stuff.
+
   var metrics = mainWorkspace.getMetrics();
-  //window.console.log('width' + metrics.contentWidth);
-  svg.setAttribute('width', 4*metrics.contentHeight);
-  svg.setAttribute('height', 4*metrics.contentWidth); 
+  svg.setAttribute('width', metrics.contentWidth);
+  svg.setAttribute('height', metrics.contentHeight);
+
 
   mainWorkspace.resize();
 };
@@ -497,8 +496,18 @@ Blockly.setMainWorkspaceMetrics_ = function(xyRatio) {
   if (goog.isNumber(xyRatio.y)) {
     this.scrollY = -metrics.contentHeight * xyRatio.y - metrics.contentTop;
   }
-  var x = this.scrollX + metrics.absoluteLeft;
-  var y = this.scrollY + metrics.absoluteTop;
+  
+    // workspace used to start at 0,0, but now start it -width, -height
+    // (its center so that )
+   var x = -metrics.viewWidth + this.scrollX + metrics.absoluteLeft;
+   var y = -metrics.viewHeight + this.scrollY + metrics.absoluteTop;
+   window.console.log('metrics vw:' + metrics.viewWidth);
+   window.console.log('metrics scrollX:' + this.scrollX);
+   window.console.log('metrics absleft:' + metrics.absoluteLeft);
+
+   window.console.log('translating to ' + x + ',' + y);
+
+
   this.translate(x, y);
   // I think this is unnecessary when moving the svg containing the dots
   // since the dots move along with the svg.
