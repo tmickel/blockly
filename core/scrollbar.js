@@ -44,7 +44,8 @@ Blockly.ScrollbarPair = function(workspace) {
       {'height': Blockly.Scrollbar.scrollbarThickness,
       'width': Blockly.Scrollbar.scrollbarThickness,
       'class': 'blocklyScrollbarBackground'}, null);
-  Blockly.Scrollbar.insertAfter_(this.corner_, workspace.getBubbleCanvas());
+  // put this back.
+  //Blockly.Scrollbar.insertAfter_(this.corner_, workspace.getBubbleCanvas());
 };
 
 /**
@@ -311,8 +312,12 @@ Blockly.Scrollbar.prototype.resizeHorizontal_ = function(hostMetrics) {
   // Horizontal toolbar should always be just above the bottom of the workspace.
   this.yCoordinate = hostMetrics.absoluteTop + hostMetrics.viewHeight -
       Blockly.Scrollbar.scrollbarThickness - 0.5;
-  this.svgGroup_.setAttribute('transform',
-      'translate(' + this.xCoordinate + ',' + this.yCoordinate + ')');
+
+  var newTranslation = 'translate3d(' + this.xCoordinate + 'px,' + this.yCoordinate + 'px,0px)';
+  this.svgGroup_.style.transform = newTranslation;
+  this.svgGroup_.setAttribute('width', hostMetrics.viewWidth)
+  this.svgGroup_.setAttribute('height', Blockly.Scrollbar.scrollbarThickness);
+
   this.svgBackground_.setAttribute('width', Math.max(0, outerLength));
   this.svgKnob_.setAttribute('x', this.constrainKnob_(innerOffset));
 };
@@ -347,8 +352,12 @@ Blockly.Scrollbar.prototype.resizeVertical_ = function(hostMetrics) {
         Blockly.Scrollbar.scrollbarThickness - 1;
   }
   this.yCoordinate = hostMetrics.absoluteTop + 0.5;
-  this.svgGroup_.setAttribute('transform',
-      'translate(' + this.xCoordinate + ',' + this.yCoordinate + ')');
+
+  var newTranslation = 'translate3d(' + this.xCoordinate + 'px,' + this.yCoordinate + 'px,0px)';
+  this.svgGroup_.style.transform = newTranslation;
+  this.svgGroup_.setAttribute('width',  Blockly.Scrollbar.scrollbarThickness);
+  this.svgGroup_.setAttribute('height', hostMetrics.viewHeight);
+
   this.svgBackground_.setAttribute('height', Math.max(0, outerLength));
   this.svgKnob_.setAttribute('y', this.constrainKnob_(innerOffset));
 };
@@ -367,15 +376,17 @@ Blockly.Scrollbar.prototype.createDom_ = function() {
   */
   var className = 'blocklyScrollbar' +
       (this.horizontal_ ? 'Horizontal' : 'Vertical');
-  this.svgGroup_ = Blockly.createSvgElement('g', {'class': className}, null);
+  this.svgGroup_ = Blockly.createSvgElement('svg', {'class': className}, null);
   this.svgBackground_ = Blockly.createSvgElement('rect',
       {'class': 'blocklyScrollbarBackground'}, this.svgGroup_);
   var radius = Math.floor((Blockly.Scrollbar.scrollbarThickness - 5) / 2);
   this.svgKnob_ = Blockly.createSvgElement('rect',
       {'class': 'blocklyScrollbarKnob', 'rx': radius, 'ry': radius},
       this.svgGroup_);
-  Blockly.Scrollbar.insertAfter_(this.svgGroup_,
-                                 this.workspace_.getBubbleCanvas());
+
+  // This is evil. Fix it.
+  var zoom = document.getElementsByClassName('blocklyZoom')[0];
+  Blockly.Scrollbar.insertAfter_(this.svgGroup_, zoom);
 };
 
 /**

@@ -535,14 +535,16 @@ Blockly.setMainWorkspaceMetrics_ = function(xyRatio) {
   var x = this.scrollX + metrics.absoluteLeft;
   var y = this.scrollY + metrics.absoluteTop;
   this.translate(x, y);
-  if (this.options.gridPattern) {
-    this.options.gridPattern.setAttribute('x', x);
-    this.options.gridPattern.setAttribute('y', y);
-    if (goog.userAgent.IE) {
-      // IE doesn't notice that the x/y offsets have changed.  Force an update.
-      this.updateGridPattern_();
-    }
-  }
+  // I think this is unnecessary when moving the svg containing the dots
+  // since the dots move along with the svg.
+  // if (this.options.gridPattern) {
+  //   this.options.gridPattern.setAttribute('x', x);
+  //   this.options.gridPattern.setAttribute('y', y);
+  //   if (goog.userAgent.IE) {
+  //     // IE doesn't notice that the x/y offsets have changed.  Force an update.
+  //     this.updateGridPattern_();
+  //   }
+  // }
 };
 
 /**

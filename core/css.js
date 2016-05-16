@@ -142,8 +142,23 @@ Blockly.Css.CONTENT = [
     'position:absolute;',
     'outline: none;',
   '}',
+
+  '.blocklyFlyout {',
+    'position:absolute;',
+    'outline: none;',
+  '}',
   
   '.blocklyZoom {',
+    'position:absolute;',
+    'outline: none;',
+  '}',
+
+  '.blocklyScrollbarVertical {',
+    'position:absolute;',
+    'outline: none;',
+  '}',
+
+  '.blocklyScrollbarHorizontal {',
     'position:absolute;',
     'outline: none;',
   '}',
