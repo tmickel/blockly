@@ -518,6 +518,7 @@ Blockly.Flyout.prototype.hide = function() {
     return;
   }
   this.svgGroup_.style.display = 'none';
+  this.scrollbar_.setVisible(false);
   // Delete all the event listeners.
   for (var x = 0, listen; listen = this.listeners_[x]; x++) {
     Blockly.unbindEvent_(listen);
