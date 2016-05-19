@@ -493,11 +493,28 @@ Blockly.getMainWorkspaceMetrics_ = function() {
                            contentY + contentHeight - viewHeight);
     var bottomEdge = Math.max(contentY + contentHeight + viewHeight / 2,
                               contentY + viewHeight);
+
   } else {
     var leftEdge = blockBox.x;
     var rightEdge = leftEdge + blockBox.width;
     var topEdge = blockBox.y;
     var bottomEdge = topEdge + blockBox.height;
+  }
+
+  var oldWidth = rightEdge - leftEdge;
+  var oldHeight = bottomEdge - topEdge;
+
+  // The smallest the workspace can to fill the whole scrollable area is 2x the view size.
+  var smallestWidth = viewWidth*2;
+  var smallestHeight = viewHeight*2
+
+  // Fix this if. silly code.
+  if (this.scrollbar) {
+    var finalWidth = Math.max(oldWidth, smallestWidth);
+    var finalHeight = Math.max(oldHeight, smallestHeight);
+  } else {
+    var finalWidth = oldWidth;
+    var finalHeight = oldHeight;
   }
   var absoluteLeft = 0;
 
@@ -512,8 +529,8 @@ Blockly.getMainWorkspaceMetrics_ = function() {
   var metrics = {
     viewHeight: svgSize.height,
     viewWidth: svgSize.width,
-    contentHeight: bottomEdge - topEdge,
-    contentWidth: rightEdge - leftEdge,
+    contentHeight: finalHeight,
+    contentWidth: finalWidth,
     viewTop: -this.scrollY,
     viewLeft: -this.scrollX,
     contentTop: topEdge,
@@ -548,18 +565,17 @@ Blockly.setMainWorkspaceMetrics_ = function(xyRatio) {
     this.scrollY = -metrics.contentHeight * xyRatio.y - metrics.contentTop;
   }
   
-    // workspace used to start at 0,0, but now start it -width, -height
-    // (its center so that )
-   var x = -metrics.viewWidth + this.scrollX + metrics.absoluteLeft;
-   var y = -metrics.viewHeight + this.scrollY + metrics.absoluteTop;
-   window.console.log('metrics vw:' + metrics.viewWidth);
-   window.console.log('metrics scrollX:' + this.scrollX);
-   window.console.log('metrics absleft:' + metrics.absoluteLeft);
+  // Set the translation of the workspace's svg to be relative to the xyRatio
+  if (goog.isNumber(xyRatio.x)) {
+     this.translateX = -metrics.contentWidth * xyRatio.x + metrics.absoluteLeft;
+  }
+  if (goog.isNumber(xyRatio.y)) {
+    this.translateY = -metrics.contentHeight * xyRatio.y + metrics.absoluteTop;
+  }
+         
 
-   window.console.log('translating to ' + x + ',' + y);
 
-
-  this.translate(x, y);
+  this.translate(this.translateX, this.translateY);
   // I think this is unnecessary when moving the svg containing the dots
   // since the dots move along with the svg.
    if (this.options.gridPattern) {
