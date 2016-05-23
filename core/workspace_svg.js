@@ -1035,10 +1035,11 @@ Blockly.WorkspaceSvg.prototype.zoom = function(x, y, type) {
   var center = this.getParentSvg().createSVGPoint();
   center.x = x;
   center.y = y;
-  center = center.matrixTransform(this.getCanvas().getCTM().inverse());
+  //center = center.matrixTransform(this.getCanvas().getCTM().inverse());
+  center = center.matrixTransform(this.getParentSvg().getCTM().inverse());
   x = center.x;
   y = center.y;
-  var canvas = this.getCanvas();
+  //  var canvas = this.getCanvas();
   // Scale factor.
   var scaleChange = (type == 1) ? speed : 1 / speed;
   // Clamp scale within valid range.
@@ -1053,7 +1054,7 @@ Blockly.WorkspaceSvg.prototype.zoom = function(x, y, type) {
   }
   if (this.scrollbar) {
     // Take a look at this code. seems off.
-    var matrix = canvas.getCTM()
+    var matrix = this.getParentSvg().getCTM()
         .translate(x * (1 - scaleChange), y * (1 - scaleChange))
         .scale(scaleChange);
     // newScale and matrix.a should be identical (within a rounding error).
@@ -1133,6 +1134,8 @@ Blockly.WorkspaceSvg.prototype.setScale = function(newScale) {
   this.scale = newScale;
   this.updateGridPattern_();
   if (this.scrollbar) {
+    // not sure if we need this... probably????
+    Blockly.svgResize(this);
     this.scrollbar.resize();
   } else {
     this.translate(this.scrollX, this.scrollY);

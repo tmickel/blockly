@@ -199,9 +199,8 @@ Blockly.svgResize = function(workspace) {
   // todo add in flyout stuff.
 
   var metrics = mainWorkspace.getMetrics();
-  svg.setAttribute('width', metrics.contentWidth);
+  svg.setAttribute('width',  metrics.contentWidth);
   svg.setAttribute('height', metrics.contentHeight);
-
 
   mainWorkspace.resize();
 };
@@ -467,7 +466,14 @@ Blockly.getMainWorkspaceMetrics_ = function() {
         this.toolboxPosition == Blockly.TOOLBOX_AT_RIGHT) {
       svgSize.width -= this.toolbox_.getWidth();
     }
+  } else if (this.flyout_) {
+    window.console.log('do something about flyout size so the blocks cannot scroll under it');
   }
+
+  // Add check to subtract out the flyout size
+
+
+
   // Set the margin to match the flyout's margin so that the workspace does
   // not jump as blocks are added.
   //var MARGIN = Blockly.Flyout.prototype.CORNER_RADIUS - 1;
@@ -505,16 +511,16 @@ Blockly.getMainWorkspaceMetrics_ = function() {
   var oldHeight = bottomEdge - topEdge;
 
   // The smallest the workspace can to fill the whole scrollable area is 2x the view size.
-  var smallestWidth = viewWidth*2;
-  var smallestHeight = viewHeight*2
+  var smallestWidth = viewWidth*2; //+ (1 - this.scale)*viewWidth;
+  var smallestHeight = viewHeight*2; //+ (1-this.scale)*viewWidth;
 
   // Fix this if. silly code.
   if (this.scrollbar) {
     var finalWidth = Math.max(oldWidth, smallestWidth);
     var finalHeight = Math.max(oldHeight, smallestHeight);
   } else {
-    var finalWidth = oldWidth;
-    var finalHeight = oldHeight;
+    var finalWidth = smallestWidth;
+    var finalHeight = smallestHeight;
   }
   var absoluteLeft = 0;
 
@@ -567,13 +573,31 @@ Blockly.setMainWorkspaceMetrics_ = function(xyRatio) {
   
   // Set the translation of the workspace's svg to be relative to the xyRatio
   if (goog.isNumber(xyRatio.x)) {
-     this.translateX = -metrics.contentWidth * xyRatio.x + metrics.absoluteLeft;
+    var scaledWidth = metrics.contentWidth + metrics.contentWidth*(this.scale - 1.0);
+    var pixels = scaledWidth*xyRatio.x;
+    var zoomBuffer =  .5*(this.scale-1.0) * metrics.contentWidth;
+    //var adjustedBuffer = zoomBuffer - zoomBuffer*(1-xyRatio.x);
+    var adjustedBuffer = zoomBuffer - (xyRatio.x/(1-xyRatio.x))*zoomBuffer;
+    var tempTranslate = pixels - metrics.absoluteLeft;
+    var translateZoom = pixels - metrics.absoluteLeft - adjustedBuffer;
+    // without scale:
+    //this.translateX = (-metrics.contentWidth * xyRatio.x) + metrics.absoluteLeft;
+    this.translateX = -1*translateZoom;
+
   }
   if (goog.isNumber(xyRatio.y)) {
-    this.translateY = -metrics.contentHeight * xyRatio.y + metrics.absoluteTop;
+    var scaledHeight = metrics.contentHeight + metrics.contentHeight*(this.scale - 1.0);
+    var pixelsY = scaledHeight*xyRatio.y;
+    var zoomBufferY =  .5*(this.scale-1.0) * metrics.contentHeight;
+    //var adjustedBuffer = zoomBuffer - zoomBuffer*(1-xyRatio.x);
+    var adjustedBufferY = zoomBufferY - (xyRatio.y/(1-xyRatio.y))*zoomBufferY;
+    var tempTranslateY = pixelsY - metrics.absoluteTop;
+    var translateZoomY = pixelsY - metrics.absoluteTop - adjustedBufferY;
+    this.translateY = -1*translateZoomY;
+    //  this.translateY = (-metrics.contentHeight * xyRatio.y) + ((1-this.scale)*metrics.contentHeight/2.0) + metrics.absoluteTop;
   }
          
-
+//metrics.contentWidth*(this.scale-1.0)
 
   this.translate(this.translateX, this.translateY);
   // I think this is unnecessary when moving the svg containing the dots
