@@ -919,12 +919,18 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(originBlock) {
   // original block because the flyout's origin may not be the same as the
   // main workspace's origin.
   var xyNew = Blockly.getSvgXY_(svgRootNew, targetWorkspace);
+
+
+  // what about scale?
+   xyNew.x += targetWorkspace.translateX;
+   xyNew.y += targetWorkspace.translateY;
+
   // Scale the scroll (getSvgXY_ did not do this).
-  xyNew.x +=
-      targetWorkspace.scrollX / targetWorkspace.scale - targetWorkspace.scrollX;
-  xyNew.y +=
-      targetWorkspace.scrollY / targetWorkspace.scale - targetWorkspace.scrollY;
-  // If the flyout is collapsible and the workspace can't be scrolled.
+  //  xyNew.x +=
+  //      targetWorkspace.scrollX / targetWorkspace.scale - targetWorkspace.scrollX;
+  //  xyNew.y +=
+  //      targetWorkspace.scrollY / targetWorkspace.scale - targetWorkspace.scrollY;
+  // // // If the flyout is collapsible and the workspace can't be scrolled.
   if (targetWorkspace.toolbox_ && !targetWorkspace.scrollbar) {
     xyNew.x += targetWorkspace.toolbox_.getWidth() / targetWorkspace.scale;
     xyNew.y += targetWorkspace.toolbox_.getHeight() / targetWorkspace.scale;

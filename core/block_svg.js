@@ -327,6 +327,9 @@ Blockly.BlockSvg.prototype.getRelativeToSurfaceXY = function() {
       element = element.parentNode;
     } while (element && element != this.workspace.getCanvas());
   }
+
+  // try getting the transform of the main workspace and adding that in?
+  
   return new goog.math.Coordinate(x, y);
 };
 
@@ -532,7 +535,7 @@ Blockly.BlockSvg.prototype.onMouseDown_ = function(e) {
   }
   this.workspace.markFocused();
   // Update Blockly's knowledge of its own location.
-  Blockly.svgResize(this.workspace);
+//  Blockly.svgResize(this.workspace);
   Blockly.terminateDrag_();
   this.select();
   Blockly.hideChaff();

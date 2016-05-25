@@ -195,6 +195,12 @@ Blockly.isTargetInput_ = function(e) {
  * @private
  */
 Blockly.getRelativeXY_ = function(element) {
+
+
+  // LOOK HERE TUESDAY:
+  // in the flyout/drag blocks 3d transform is set, not otherwise.
+
+
   var xy = new goog.math.Coordinate(0, 0);
   if (!element) {
     window.console.log('element isn not defined');

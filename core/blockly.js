@@ -195,9 +195,6 @@ Blockly.svgResize = function(workspace) {
     somethingChanged = true;
   }
 
-  // we want the width and height be be 2x the container height (- size of toolbox/flyout)
-  // todo add in flyout stuff.
-
   var metrics = mainWorkspace.getMetrics();
   svg.setAttribute('width',  metrics.contentWidth);
   svg.setAttribute('height', metrics.contentHeight);
@@ -581,7 +578,7 @@ Blockly.setMainWorkspaceMetrics_ = function(xyRatio) {
     var tempTranslate = pixels - metrics.absoluteLeft;
     var translateZoom = pixels - metrics.absoluteLeft - adjustedBuffer;
     // without scale:
-    //this.translateX = (-metrics.contentWidth * xyRatio.x) + metrics.absoluteLeft;
+    //this.translateX = (-metr ics.contentWidth * xyRatio.x) + metrics.absoluteLeft;
     this.translateX = -1*translateZoom;
 
   }
