@@ -353,7 +353,7 @@ Blockly.Toolbox.prototype.populate_ = function(newTree) {
   }
 
   // Fire a resize event since the toolbox may have changed width and height.
-  Blockly.asyncSvgResize(this.workspace_);
+  Blockly.resizeSvgContents(this.workspace_);
 };
 
 /**
@@ -538,7 +538,9 @@ Blockly.Toolbox.TreeNode = function(toolbox, html, opt_config, opt_domHelper) {
   goog.ui.tree.TreeNode.call(this, html, opt_config, opt_domHelper);
   if (toolbox) {
     var resize = function() {
-      Blockly.asyncSvgResize(toolbox.workspace_);
+      // Even though the div hasn't changed size, the visible workspace
+      // surface of the workspace has, so we may need to reposition everything.
+      Blockly.svgResize(toolbox.workspace_);
     };
     // Fire a resize event since the toolbox may have changed width.
     goog.events.listen(toolbox.tree_,
@@ -588,6 +590,9 @@ Blockly.Toolbox.TreeNode.prototype.onDoubleClick_ = function(e) {
 
 /**
  * A blank separator node in the tree.
+ * @param {Object=} config The configuration for the tree. See
+ *    goog.ui.tree.TreeControl.DefaultConfig. If not specified, a default config
+ *    will be used.
  * @constructor
  * @extends {Blockly.Toolbox.TreeNode}
  */
