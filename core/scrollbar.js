@@ -465,26 +465,7 @@ Blockly.Scrollbar.prototype.resizeContentHorizontal = function(hostMetrics) {
 
   var handlePosition = (hostMetrics.viewLeft - hostMetrics.contentLeft) *
       this.ratio_;
-<<<<<<< HEAD
-  this.svgKnob_.setAttribute('width', Math.max(0, innerLength));
-  this.xCoordinate = hostMetrics.absoluteLeft + 0.5;
-  if (this.pair_ && this.workspace_.RTL) {
-    this.xCoordinate += Blockly.Scrollbar.scrollbarThickness;
-  }
-  // Horizontal toolbar should always be just above the bottom of the workspace.
-  this.yCoordinate = hostMetrics.absoluteTop + hostMetrics.viewHeight -
-      Blockly.Scrollbar.scrollbarThickness - 0.5;
-
-  var newTranslation = 'translate3d(' + this.xCoordinate + 'px,' + this.yCoordinate + 'px,0px)';
-  this.svgGroup_.style.transform = newTranslation;
-  this.svgGroup_.setAttribute('width', hostMetrics.viewWidth)
-  this.svgGroup_.setAttribute('height', Blockly.Scrollbar.scrollbarThickness);
-
-  this.svgBackground_.setAttribute('width', Math.max(0, outerLength));
-  this.svgKnob_.setAttribute('x', this.constrainKnob_(innerOffset));
-=======
   this.setHandlePosition(this.constrainHandle_(handlePosition));
->>>>>>> develop
 };
 
 /**
@@ -549,33 +530,8 @@ Blockly.Scrollbar.prototype.resizeContentVertical = function(hostMetrics) {
 
   var handlePosition = (hostMetrics.viewTop - hostMetrics.contentTop) *
       this.ratio_;
-<<<<<<< HEAD
-  this.svgKnob_.setAttribute('height', Math.max(0, innerLength));
-  this.xCoordinate = hostMetrics.absoluteLeft + 0.5;
-  if (!this.workspace_.RTL) {
-    this.xCoordinate += hostMetrics.viewWidth -
-        Blockly.Scrollbar.scrollbarThickness - 1;
-           // Add with of toolbox if it exists, otherwise, thickness of scrollbar
-           if (this.workspace_.isFlyout) {
-            if (Blockly.getMainWorkspace().toolbox_) {
-             this.xCoordinate += Blockly.getMainWorkspace().toolbox_.width;
-             } else {
-              this.xCoordinate += Blockly.Scrollbar.scrollbarThickness;
-             }
-           }
-  }
-  this.yCoordinate = hostMetrics.absoluteTop + 0.5;
 
-  var newTranslation = 'translate3d(' + this.xCoordinate + 'px,' + this.yCoordinate + 'px,0px)';
-  this.svgGroup_.style.transform = newTranslation;
-  this.svgGroup_.setAttribute('width',  Blockly.Scrollbar.scrollbarThickness);
-  this.svgGroup_.setAttribute('height', hostMetrics.viewHeight);
-
-  this.svgBackground_.setAttribute('height', Math.max(0, outerLength));
-  this.svgKnob_.setAttribute('y', this.constrainKnob_(innerOffset));
-=======
   this.setHandlePosition(this.constrainHandle_(handlePosition));
->>>>>>> develop
 };
 
 /**

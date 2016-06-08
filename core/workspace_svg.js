@@ -132,7 +132,6 @@ Blockly.WorkspaceSvg.prototype.trashcan = null;
 Blockly.WorkspaceSvg.prototype.scrollbar = null;
 
 /**
-<<<<<<< HEAD
  *
  * @return {Array<!Element>} The workspace's SVG group.
  */
@@ -171,14 +170,14 @@ Blockly.WorkspaceSvg.prototype.createTrashLayer = function() {
 
   return docFragment;
 };
-=======
+
  * Time that the last sound was played.
  * @type {Date}
  * @private
  */
 Blockly.WorkspaceSvg.prototype.lastSound_ = null;
 
->>>>>>> develop
+
 /**
  * Create the workspace DOM elements.
  * @param {string=} opt_backgroundClass Either 'blocklyMainBackground' or
