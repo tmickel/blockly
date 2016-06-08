@@ -360,8 +360,6 @@ Blockly.Flyout.prototype.position = function() {
   this.svgGroup_.style.height = this.height_ + 'px';
   this.svgGroup_.style.width = this.width_ + 'px';
 
-  this.svgGroup_.setAttribute('transform', 'translate(' + x + ',' + y + ')');
-
   // Record the height for Blockly.Flyout.getMetrics_, or width if the layout is
   // horizontal.
   if (this.horizontalLayout_) {
