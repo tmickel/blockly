@@ -171,6 +171,7 @@ Blockly.WorkspaceSvg.prototype.createTrashLayer = function() {
   return docFragment;
 };
 
+/*
  * Time that the last sound was played.
  * @type {Date}
  * @private
