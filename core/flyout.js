@@ -148,13 +148,17 @@ Blockly.Flyout.prototype.height_ = 0;
  */
 Blockly.Flyout.prototype.createDom = function() {
   /*
-  <g>
+  <svg>
     <path class="blocklyFlyoutBackground"/>
     <g class="blocklyFlyout"></g>
-  </g>
+  </svgg>
   */
-  this.svgGroup_ = Blockly.createSvgElement('g',
-      {'class': 'blocklyFlyout'}, null);
+   this.svgGroup_ = Blockly.createSvgElement('svg',
+      {'class': 'blocklyFlyout',
+       'width': '0',
+       'height':'0',
+        }, null);
+
   this.svgBackground_ = Blockly.createSvgElement('path',
       {'class': 'blocklyFlyoutBackground'}, this.svgGroup_);
   this.svgGroup_.appendChild(this.workspace_.createDom());
@@ -351,8 +355,9 @@ Blockly.Flyout.prototype.position = function() {
     y += targetWorkspaceMetrics.viewHeight;
     y -= this.height_;
   }
+  var newTranslation = 'translate3d(' + x + 'px,' + y + 'px,0px)';
+  this.svgGroup_.style.transform = newTranslation;
 
-  this.svgGroup_.setAttribute('transform', 'translate(' + x + ',' + y + ')');
 
   // Record the height for Blockly.Flyout.getMetrics_, or width if the layout is
   // horizontal.
@@ -361,6 +366,8 @@ Blockly.Flyout.prototype.position = function() {
   } else {
     this.height_ = targetWorkspaceMetrics.viewHeight;
   }
+  this.svgGroup_.style.height = this.height_ + 'px';
+  this.svgGroup_.style.width = this.width_ + 'px';
 
   // Update the scrollbar (if one exists).
   if (this.scrollbar_) {
@@ -590,6 +597,9 @@ Blockly.Flyout.prototype.show = function(xmlList) {
 
   this.offsetHorizontalRtlBlocks(this.workspace_.getTopBlocks(false));
   this.filterForCapacity_();
+  // if (this.scrollbar_) {
+  //   this.scrollbar_.setVisible(true);
+  // }
 
   // Correctly position the flyout's scrollbar when it opens.
   this.position();
@@ -881,8 +891,9 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(originBlock) {
   // If the flyout is on the right side, (0, 0) in the flyout is offset to
   // the right of (0, 0) in the main workspace.  Add an offset to take that
   // into account.
+  var targetWorkspaceMetrics = targetWorkspace.getMetrics();
   if (this.toolboxPosition_ == Blockly.TOOLBOX_AT_RIGHT) {
-    scrollX = targetWorkspace.getMetrics().viewWidth - this.width_;
+    scrollX = targetWorkspaceMetrics.viewWidth - this.width_;
     scale = targetWorkspace.scale;
     // Scale the scroll (getSvgXY_ did not do this).
     xyOld.x += scrollX / scale - scrollX;
@@ -898,7 +909,7 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(originBlock) {
   // If the flyout is on the bottom, (0, 0) in the flyout is offset to be below
   // (0, 0) in the main workspace.  Add an offset to take that into account.
   if (this.toolboxPosition_ == Blockly.TOOLBOX_AT_BOTTOM) {
-    scrollY = targetWorkspace.getMetrics().viewHeight - this.height_;
+    scrollY = targetWorkspaceMetrics.viewHeight - this.height_;
     scale = targetWorkspace.scale;
     xyOld.y += scrollY / scale - scrollY;
   }
@@ -915,6 +926,12 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(originBlock) {
   // original block because the flyout's origin may not be the same as the
   // main workspace's origin.
   var xyNew = Blockly.getSvgXY_(svgRootNew, targetWorkspace);
+
+  // Shift by the amount that the svg has been translated.
+  // MAKE WORK FOR OTHER TOOLBOX POSITIONS OTHER THAN START AND TOP
+  xyNew.x += (targetWorkspace.translateX - targetWorkspaceMetrics.absoluteLeft);
+  xyNew.y += (targetWorkspace.translateY - targetWorkspaceMetrics.absoluteTop);
+
   // Scale the scroll (getSvgXY_ did not do this).
   xyNew.x +=
       targetWorkspace.scrollX / targetWorkspace.scale - targetWorkspace.scrollX;
