@@ -896,7 +896,7 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(originBlock) {
     scrollX = targetWorkspaceMetrics.viewWidth - this.width_;
     scale = targetWorkspace.scale;
     // Scale the scroll (getSvgXY_ did not do this).
-    xyOld.x += scrollX / scale - scrollX;
+    xyOld.x += scrollX / scale;
   }
 
   // Take into account that the flyout might have been scrolled vertically
@@ -911,7 +911,7 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(originBlock) {
   if (this.toolboxPosition_ == Blockly.TOOLBOX_AT_BOTTOM) {
     scrollY = targetWorkspaceMetrics.viewHeight - this.height_;
     scale = targetWorkspace.scale;
-    xyOld.y += scrollY / scale - scrollY;
+    xyOld.y += scrollY / scale;
   }
 
   // Create the new block by cloning the block in the flyout (via XML).
@@ -928,7 +928,6 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(originBlock) {
   var xyNew = Blockly.getSvgXY_(svgRootNew, targetWorkspace);
 
   // Shift by the amount that the svg has been translated.
-  // MAKE WORK FOR OTHER TOOLBOX POSITIONS OTHER THAN START AND TOP
   xyNew.x += (targetWorkspace.translateX - targetWorkspaceMetrics.absoluteLeft);
   xyNew.y += (targetWorkspace.translateY - targetWorkspaceMetrics.absoluteTop);
 
