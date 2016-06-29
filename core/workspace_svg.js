@@ -785,17 +785,14 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
   // TODO: Remove terminateDrag and compensate for coordinate skew during zoom.
   Blockly.terminateDrag_();
   var delta = e.deltaY > 0 ? -1 : 1;
-<<<<<<< HEAD
   var position = Blockly.mouseToSvg(e, this.getParentSvg(),
       this.getInverseScreenCTM());
-=======
   var position = Blockly.mouseToSvg(e, this.getParentSvg());
   // Hmm, maybe this belongs in mouseToSvg?
   // Other places mouseSvg is called that need to be investigated:
   //   mouseDownBar (scrollbar.js), moveDrag(workspace.js) 
   position.x += this.translateX;
   position.y += this.translateY;
->>>>>>> 2bca7eb... Split blockly into multiple SVGs:
   this.zoom(position.x, position.y, delta);
   e.preventDefault();
 };
