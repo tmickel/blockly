@@ -209,13 +209,6 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
   /** @type {SVGElement} */
   this.svgBubbleCanvas_ = Blockly.createSvgElement('g',
       {'class': 'blocklyBubbleCanvas'}, this.svgGroup_, this);
-  var bottom = Blockly.Scrollbar.scrollbarThickness;
-  if (this.options.hasTrashcan) {
-    bottom = this.addTrashcan_(bottom);
-  }
-  if (this.options.zoomOptions && this.options.zoomOptions.controls) {
-    bottom = this.addZoomControls_(bottom);
-  }
   Blockly.bindEvent_(this.svgGroup_, 'mousedown', this, this.onMouseDown_);
   var thisWorkspace = this;
   Blockly.bindEvent_(this.svgGroup_, 'touchstart', null,
@@ -237,6 +230,45 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
   return this.svgGroup_;
 };
 
+/**
+ *
+ * @return {Array<!Element>} The workspace's SVG group.
+ */
+Blockly.WorkspaceSvg.prototype.createTrashLayer = function() {
+  var docFragment = document.createDocumentFragment();
+
+  var bottom = Blockly.Scrollbar.scrollbarThickness;
+
+  var svgTrashcan = null; 
+  if (this.options.hasTrashcan) {
+    this.trashcan = new Blockly.Trashcan(this);
+    svgTrashcan = this.trashcan.createDom();
+    //trashLayer.appendChild(svgTrashcan);
+    // figure out what bottom should be. Need to know whether there are scrollbars
+    // and zoom buttons. Just setting to 10 for now.
+    bottom = this.trashcan.init(bottom);
+    docFragment.appendChild(svgTrashcan);
+  }
+  if (this.options.zoomOptions && this.options.zoomOptions.controls) {
+      /** @type {Blockly.ZoomControls} */
+    this.zoomControls_ = new Blockly.ZoomControls(this);
+    var svgZoomControls = this.zoomControls_.createDom();
+//    trashLayer.appendChild(svgZoomControls);
+    this.zoomControls_.init(bottom);
+    docFragment.appendChild(svgZoomControls);
+  }
+
+  // Determine if there needs to be a category tree, or a simple list of
+  // blocks.  This cannot be changed later, since the UI is very different.
+  if (this.options.hasCategories) {
+    this.toolbox_ = new Blockly.Toolbox(this);
+  } else if (this.options.languageTree) {
+    var flyoutSvg = this.addFlyout_();
+    docFragment.appendChild(flyoutSvg);
+  }
+
+  return docFragment;
+};
 /**
  * Dispose of this workspace.
  * Unlink from all DOM elements to prevent memory leaks.
@@ -303,7 +335,6 @@ Blockly.WorkspaceSvg.prototype.addTrashcan_ = function(bottom) {
   /** @type {Blockly.Trashcan} */
   this.trashcan = new Blockly.Trashcan(this);
   var svgTrashcan = this.trashcan.createDom();
-  this.svgGroup_.insertBefore(svgTrashcan, this.svgBlockCanvas_);
   return this.trashcan.init(bottom);
 };
 
@@ -323,6 +354,7 @@ Blockly.WorkspaceSvg.prototype.addZoomControls_ = function(bottom) {
 
 /**
  * Add a flyout.
+ * @return {Element} The svg element for the flyout.
  * @private
  */
 Blockly.WorkspaceSvg.prototype.addFlyout_ = function() {
@@ -336,8 +368,8 @@ Blockly.WorkspaceSvg.prototype.addFlyout_ = function() {
   /** @type {Blockly.Flyout} */
   this.flyout_ = new Blockly.Flyout(workspaceOptions);
   this.flyout_.autoClose = false;
-  var svgFlyout = this.flyout_.createDom();
-  this.svgGroup_.insertBefore(svgFlyout, this.svgBlockCanvas_);
+  var flyoutSvg = this.flyout_.createDom();
+  return flyoutSvg;
 };
 
 /**
@@ -347,6 +379,24 @@ Blockly.WorkspaceSvg.prototype.addFlyout_ = function() {
  * @package
  */
 Blockly.WorkspaceSvg.prototype.resizeContents = function() {
+  // Do we need this when there is no scrollbar?
+  var metrics = this.getMetrics();
+  if (!this.isFlyout) {
+    var parentSvg = this.getParentSvg();
+    // Fix for mutators. js error and rect doesn't exist?
+    // Start the background/grid 1/2 the view width left or up.
+    this.svgBackground_.setAttribute(
+      'x', (metrics.contentLeft  - metrics.viewWidth / 2) + 'px');
+    this.svgBackground_.setAttribute(
+      'y', (metrics.contentTop - metrics.viewHeight / 2) + 'px');
+    // Add viewWidth & height to account for 1/2 view width/height buffer on
+    // each edge of the contents.  This is part of the 1/2 scroll 
+    // TODO(picklesrus): check whether we need the round.
+    parentSvg.setAttribute('width',
+      Math.round(metrics.contentWidth + metrics.viewWidth));
+    parentSvg.setAttribute('height',
+      Math.round(metrics.contentHeight + metrics.viewHeight));
+ }
   if (this.scrollbar) {
     // TODO(picklesrus): Once rachel-fenichel's scrollbar refactoring
     // is complete, call the method that only resizes scrollbar
@@ -376,12 +426,9 @@ Blockly.WorkspaceSvg.prototype.resize = function() {
   if (this.zoomControls_) {
     this.zoomControls_.position();
   }
-  if (this.scrollbar) {
-    this.scrollbar.resize();
-  }
-
   this.updateInverseScreenCTM();
   this.recordDeleteAreas();
+  this.resizeContents();
 };
 
 /**
@@ -425,10 +472,21 @@ Blockly.WorkspaceSvg.prototype.getParentSvg = function() {
  * @param {number} y Vertical translation.
  */
 Blockly.WorkspaceSvg.prototype.translate = function(x, y) {
-  var translation = 'translate(' + x + ',' + y + ') ' +
-      'scale(' + this.scale + ')';
-  this.svgBlockCanvas_.setAttribute('transform', translation);
-  this.svgBubbleCanvas_.setAttribute('transform', translation);
+  var newTranslationWithoutScale =
+    'translate3d(' + x + 'px,' + y + 'px,0px) scale(1)';
+  var newTranslationWithScale =
+    'translate3d(' + x + 'px,' + y + 'px,0px) scale(' + this.scale + ')';
+  // For the flyout, move the block/bubbles, for the main workspace, move
+  // the whole svg.
+  if (this.isFlyout) {
+    this.svgBlockCanvas_.style.transform = newTranslationWithScale;
+    this.svgBubbleCanvas_.style.transform = newTranslationWithScale;
+  } else {
+    var parent = this.getParentSvg();
+    this.svgBlockCanvas_.style.transform =
+      "translate3d(0px, 0px, 0px) scale(" + this.scale  + ")";
+    parent.style.transform = newTranslationWithoutScale;
+  }
 };
 
 /**
@@ -727,8 +785,17 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
   // TODO: Remove terminateDrag and compensate for coordinate skew during zoom.
   Blockly.terminateDrag_();
   var delta = e.deltaY > 0 ? -1 : 1;
+<<<<<<< HEAD
   var position = Blockly.mouseToSvg(e, this.getParentSvg(),
       this.getInverseScreenCTM());
+=======
+  var position = Blockly.mouseToSvg(e, this.getParentSvg());
+  // Hmm, maybe this belongs in mouseToSvg?
+  // Other places mouseSvg is called that need to be investigated:
+  //   mouseDownBar (scrollbar.js), moveDrag(workspace.js) 
+  position.x += this.translateX;
+  position.y += this.translateY;
+>>>>>>> 2bca7eb... Split blockly into multiple SVGs:
   this.zoom(position.x, position.y, delta);
   e.preventDefault();
 };
@@ -1062,14 +1129,6 @@ Blockly.WorkspaceSvg.prototype.markFocused = function() {
  */
 Blockly.WorkspaceSvg.prototype.zoom = function(x, y, type) {
   var speed = this.options.zoomOptions.scaleSpeed;
-  var metrics = this.getMetrics();
-  var center = this.getParentSvg().createSVGPoint();
-  center.x = x;
-  center.y = y;
-  center = center.matrixTransform(this.getCanvas().getCTM().inverse());
-  x = center.x;
-  y = center.y;
-  var canvas = this.getCanvas();
   // Scale factor.
   var scaleChange = (type == 1) ? speed : 1 / speed;
   // Clamp scale within valid range.
@@ -1083,12 +1142,14 @@ Blockly.WorkspaceSvg.prototype.zoom = function(x, y, type) {
     return;  // No change in zoom.
   }
   if (this.scrollbar) {
-    var matrix = canvas.getCTM()
-        .translate(x * (1 - scaleChange), y * (1 - scaleChange))
-        .scale(scaleChange);
-    // newScale and matrix.a should be identical (within a rounding error).
-    this.scrollX = matrix.e - metrics.absoluteLeft;
-    this.scrollY = matrix.f - metrics.absoluteTop;
+    var metrics = this.getMetrics();
+    // Calculate the delta in scroll x and y as the offfset into svg
+    // multiplied by the scale change. 
+    var scrollXDelta = (-1 * this.translateX + x) * (1-scaleChange);
+    var scrollYDelta = (-1 * this.translateY + y) * (1-scaleChange);
+    // TranslateX & Y is the translation of the workspace.
+    this.scrollX = scrollXDelta + this.translateX - metrics.absoluteLeft;
+    this.scrollY = scrollYDelta + this.translateY - metrics.absoluteTop;
   }
   this.setScale(newScale);
 };
@@ -1163,7 +1224,7 @@ Blockly.WorkspaceSvg.prototype.setScale = function(newScale) {
   this.scale = newScale;
   this.updateGridPattern_();
   if (this.scrollbar) {
-    this.scrollbar.resize();
+    this.resizeContents();
   } else {
     this.translate(this.scrollX, this.scrollY);
   }

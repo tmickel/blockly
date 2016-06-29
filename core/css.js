@@ -133,14 +133,41 @@ Blockly.Css.setCursor = function(cursor) {
 Blockly.Css.CONTENT = [
   '.blocklySvg {',
     'background-color: #fff;',
+    'position: absolute;',
     'outline: none;',
-    'overflow: hidden;',  /* IE overflows by default. */
+    'overflow: visible;',  /* IE overflows by default. */
   '}',
 
   '.blocklyWidgetDiv {',
     'display: none;',
     'position: absolute;',
     'z-index: 999;',
+  '}',
+  
+  '.blocklyZoom {',
+    'position:absolute;',
+    'outline: none;',
+  '}',
+
+  '.blocklyTrash {',
+    'position:absolute;',
+    'outline: none;',
+    'overflow: visible;', /* for animation */
+  '}',
+
+  '.blocklyFlyout {',
+    'position:absolute;',
+    'outline: none;',
+  '}',
+  
+  '.blocklyScrollbarVertical {',
+    'position:absolute;',
+    'outline: none;',
+  '}',
+
+  '.blocklyScrollbarHorizontal {',
+    'position:absolute;',
+    'outline: none;',
   '}',
 
   '.blocklyTooltipDiv {',
