@@ -329,8 +329,10 @@ Blockly.BlockSvg.prototype.setParent = function(newParent) {
       newParent.svgGroup_.appendChild(this.svgGroup_);
     }
     var newXY = this.getRelativeToSurfaceXY();
-    this.workspace.getCanvas().removeChild(this.svg_);
-    this.svg_ = null;
+    if (this.svg_.parentNode == this.workspace.getCanvas()) {
+      this.workspace.getCanvas().removeChild(this.svg_);
+      this.svg_ = null;
+    }
     // Move the connections to match the child's new position.
     this.moveConnections_(newXY.x-oldXY.x, newXY.y-oldXY.y);
   }
