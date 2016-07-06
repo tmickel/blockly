@@ -309,7 +309,7 @@ Blockly.BlockSvg.prototype.setParent = function(newParent) {
     this.svg_.appendChild(this.svgGroup_);
     this.workspace.getCanvas().appendChild(this.svg_);
     this.svgGroup_.removeAttribute('transform');
-    this.svg_.setAttribute('style', 'transform: translate(' + xy.x + 'px,' + xy.y + 'px)');
+    this.svg_.setAttribute('style', 'transform: translate3d(' + xy.x + 'px,' + xy.y + 'px, 0px)');
   }
 
   Blockly.Field.startCache();
@@ -369,7 +369,7 @@ Blockly.BlockSvg.prototype.moveBy = function(dx, dy) {
   var event = new Blockly.Events.Move(this);
   var xy = this.getRelativeToSurfaceXY();
   this.getSvgRoot().setAttribute('style',
-      'transform: translate(' + (xy.x + dx) + 'px,' + (xy.y + dy) + 'px)');
+      'transform: translate3d(' + (xy.x + dx) + 'px,' + (xy.y + dy) + 'px, 0px)');
   this.moveConnections_(dx, dy);
   event.recordNew();
   Blockly.resizeSvgContents(this.workspace);
@@ -884,7 +884,7 @@ Blockly.BlockSvg.prototype.onMouseMove_ = function(e) {
         // Push this block to the very top of the stack.
         this.unplug();
         var group = this.getSvgRoot();
-        this.translate_ = 'translate(' + newXY.x + 'px,' + newXY.y + 'px)';
+        this.translate_ = 'translate3d(' + newXY.x + 'px,' + newXY.y + 'px, 0px)';
         this.disconnectUiEffect();
       }
       this.setDragging_(true);
@@ -894,7 +894,7 @@ Blockly.BlockSvg.prototype.onMouseMove_ = function(e) {
     // Unrestricted dragging.
     var dxy = goog.math.Coordinate.difference(oldXY, this.dragStartXY_);
     var group = this.getSvgRoot();
-    this.translate_ = 'translate(' + newXY.x + 'px,' + newXY.y + 'px)';
+    this.translate_ = 'translate3d(' + newXY.x + 'px,' + newXY.y + 'px, 0px)';
     group.setAttribute('style', 'transform: ' + this.translate_ + this.skew_);
     // Drag all the nested bubbles.
     for (var i = 0; i < this.draggedBubbles_.length; i++) {
@@ -1093,7 +1093,7 @@ Blockly.BlockSvg.disposeUiStep_ = function(clone, rtl, start, workspaceScale) {
         (rtl ? -1 : 1) * clone.bBox_.width * workspaceScale / 2 * percent;
     var y = clone.translateY_ + clone.bBox_.height * workspaceScale * percent;
     var scale = (1 - percent) * workspaceScale;
-    clone.setAttribute('style', 'transform: translate(' + x + ',' + y + ')' +
+    clone.setAttribute('style', 'transform: translate3d(' + x + ',' + y + ', 0px)' +
         ' scale(' + scale + ')');
     var closure = function() {
       Blockly.BlockSvg.disposeUiStep_(clone, rtl, start, workspaceScale);
