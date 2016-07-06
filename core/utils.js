@@ -228,16 +228,7 @@ Blockly.getRelativeXY_ = function(element) {
          xy.y += parseFloat(styleComponents[3]);
        }
      }
- } else if (style && style.indexOf('translate') > -1) {
-     // Finally, check for style="transform: translate(...)".
-     var styleComponents = style.match(Blockly.getRelativeXY_.XY_REGEXP_);
-     if (styleComponents) {
-       xy.x += parseFloat(styleComponents[1]);
-       if (styleComponents[3]) {
-         xy.y += parseFloat(styleComponents[3]);
-       }
-     }
- }
+   }
 
    return xy;
  };
