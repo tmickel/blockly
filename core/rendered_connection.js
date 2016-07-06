@@ -162,8 +162,8 @@ Blockly.RenderedConnection.prototype.tighten_ = function() {
       throw 'block is not rendered.';
     }
     var xy = Blockly.getRelativeXY_(svgRoot);
-    svgRoot.setAttribute('transform',
-        'translate(' + (xy.x - dx) + ',' + (xy.y - dy) + ')');
+    svgRoot.setAttribute('style',
+        'transform: translate(' + (xy.x - dx) + ',' + (xy.y - dy) + ')');
     block.moveConnections_(-dx, -dy);
   }
 };
