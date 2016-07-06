@@ -153,14 +153,14 @@ Blockly.Flyout.prototype.createDom = function() {
     <g class="blocklyFlyout"></g>
   </svgg>
   */
-   this.svgGroup_ = Blockly.createSvgElement('svg',
+   this.svgGroup_ = goog.dom.createDom('div',
       {'class': 'blocklyFlyout',
        'width': '0',
-       'height':'0',
+       'height':'0'
         }, null);
 
-  this.svgBackground_ = Blockly.createSvgElement('path',
-      {'class': 'blocklyFlyoutBackground'}, this.svgGroup_);
+  /*this.svgBackground_ = Blockly.createSvgElement('path',
+      {'class': 'blocklyFlyoutBackground'}, this.svgGroup_);*/
   this.svgGroup_.appendChild(this.workspace_.createDom());
   return this.svgGroup_;
 };
@@ -421,7 +421,7 @@ Blockly.Flyout.prototype.setBackgroundPathVertical_ = function(width, height) {
   // Bottom.
   path.push('h', -width);
   path.push('z');
-  this.svgBackground_.setAttribute('d', path.join(' '));
+ // this.svgBackground_.setAttribute('d', path.join(' '));
 };
 
 /**
@@ -466,7 +466,7 @@ Blockly.Flyout.prototype.setBackgroundPathHorizontal_ = function(width,
     // Left.
     path.push('z');
   }
-  this.svgBackground_.setAttribute('d', path.join(' '));
+ // this.svgBackground_.setAttribute('d', path.join(' '));
 };
 
 /**
@@ -584,8 +584,8 @@ Blockly.Flyout.prototype.show = function(xmlList) {
     }
   };
 
-  this.listeners_.push(Blockly.bindEvent_(this.svgBackground_, 'mouseover',
-      this, deselectAll));
+  /*this.listeners_.push(Blockly.bindEvent_(this.svgBackground_, 'mouseover',
+      this, deselectAll));*/
 
   if (this.horizontalLayout_) {
     this.height_ = 0;
@@ -628,7 +628,7 @@ Blockly.Flyout.prototype.layoutBlocks_ = function(blocks, gaps) {
       child.isInFlyout = true;
     }
     block.render();
-    var root = block.getSvgRoot();
+    var root = block.svgGroup_;
     var blockHW = block.getHeightWidth();
     var tab = block.outputConnection ? Blockly.BlockSvg.TAB_WIDTH : 0;
     if (this.horizontalLayout_) {
@@ -879,7 +879,7 @@ Blockly.Flyout.prototype.createBlockFunc_ = function(originBlock) {
  */
 Blockly.Flyout.prototype.placeNewBlock_ = function(originBlock) {
   var targetWorkspace = this.targetWorkspace_;
-  var svgRootOld = originBlock.getSvgRoot();
+  var svgRootOld = originBlock.svgGroup_;
   if (!svgRootOld) {
     throw 'originBlock is not rendered.';
   }
@@ -922,7 +922,7 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(originBlock) {
   // Create the new block by cloning the block in the flyout (via XML).
   var xml = Blockly.Xml.blockToDom(originBlock);
   var block = Blockly.Xml.domToBlock(xml, targetWorkspace);
-  var svgRootNew = block.getSvgRoot();
+  var svgRootNew = block.svgGroup_;
   if (!svgRootNew) {
     throw 'block is not rendered.';
   }
