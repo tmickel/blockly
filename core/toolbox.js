@@ -173,7 +173,7 @@ Blockly.Toolbox.prototype.init = function() {
    * @private
    */
   this.flyout_ = new Blockly.Flyout(workspaceOptions);
-  goog.dom.insertSiblingAfter(this.flyout_.createDom(), 
+  goog.dom.insertSiblingAfter(this.flyout_.createDom(),
     document.getElementsByClassName('blocklySvg')[0]);
   this.flyout_.init(workspace);
 
@@ -230,7 +230,7 @@ Blockly.Toolbox.prototype.position = function() {
   }
 
   var svg = this.workspace_.getParentSvg();
-  var divContainer = goog.dom.getParentElement(svg);
+  var divContainer = svg;
   var divPosition = goog.style.getPageOffset(divContainer);
 
   var svgSize = Blockly.svgSize(svg);

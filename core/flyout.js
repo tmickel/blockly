@@ -653,7 +653,7 @@ Blockly.Flyout.prototype.layoutBlocks_ = function(blocks, gaps) {
     rect.tooltip = block;
     Blockly.Tooltip.bindMouseEvents(rect);
     // Add the rectangles under the blocks, so that the blocks' tooltips work.
-    this.workspace_.getCanvas().insertBefore(rect, block.getSvgRoot());
+    //this.workspace_.getCanvas().insertBefore(rect, block.getSvgRoot());
     block.flyoutRect_ = rect;
     this.buttons_[i] = rect;
 

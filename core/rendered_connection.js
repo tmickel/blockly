@@ -157,12 +157,12 @@ Blockly.RenderedConnection.prototype.tighten_ = function() {
   var dy = this.targetConnection.y_ - this.y_;
   if (dx != 0 || dy != 0) {
     var block = this.targetBlock();
-    var svgRoot = block.getSvgRoot();
+    var svgRoot = block.svgGroup_;
     if (!svgRoot) {
       throw 'block is not rendered.';
     }
     var xy = Blockly.getRelativeXY_(svgRoot);
-    block.getSvgRoot().setAttribute('transform',
+    svgRoot.setAttribute('transform',
         'translate(' + (xy.x - dx) + ',' + (xy.y - dy) + ')');
     block.moveConnections_(-dx, -dy);
   }

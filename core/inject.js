@@ -51,11 +51,11 @@ Blockly.inject = function(container, opt_options) {
     throw 'Error: container is not in current document.';
   }
   var options = new Blockly.Options(opt_options || {});
-  var workspaceSvg = Blockly.createDom_(container, options);
-  var workspace = Blockly.createMainWorkspace_(container, workspaceSvg, options);
+  var workspaceDiv = Blockly.createDom_(container, options);
+  var workspace = Blockly.createMainWorkspace_(container, workspaceDiv, options);
   Blockly.init_(workspace);
   workspace.markFocused();
-  Blockly.bindEvent_(workspaceSvg, 'focus', workspace, workspace.markFocused);
+  Blockly.bindEvent_(workspaceDiv, 'focus', workspace, workspace.markFocused);
   Blockly.svgResize(workspace);
   return workspace;
 };
@@ -94,10 +94,8 @@ Blockly.createDom_ = function(container, options) {
     'xmlns:html': 'http://www.w3.org/1999/xhtml',
     'xmlns:xlink': 'http://www.w3.org/1999/xlink',
     'version': '1.1',
-    'class': 'blocklySvg',
     'width': '0',
-    'height': '0',
-  }, container);
+    'height': '0'}, container.parnetNode);
   /*
   <defs>
     ... filters go here ...
@@ -173,25 +171,29 @@ Blockly.createDom_ = function(container, options) {
     // x1, y1, x1, x2 properties will be set later in updateGridPattern_.
   }
   options.gridPattern = gridPattern;
-  return svg;
+
+  // Actual div where blocks are placed.
+  var workspaceDiv = goog.dom.createDom('div', 'blocklySvg');
+  container.appendChild(workspaceDiv);
+  return workspaceDiv;
 };
 
 /**
- * Create a main workspace and add it to the SVG.
- * @param {!Element} svg SVG element with pattern defined.
+ * Create a main workspace and add it to the div.
+ * @param {!Element} div Div element with pattern defined.
  * @param {!Element} container The container for the workpsace.
  * @param {!Blockly.Options} options Dictionary of options.
  * @return {!Blockly.Workspace} Newly created main workspace.
  * @private
  */
-Blockly.createMainWorkspace_ = function(container, svg, options) {
+Blockly.createMainWorkspace_ = function(container, div, options) {
   options.parentWorkspace = null;
   options.getMetrics = Blockly.getMainWorkspaceMetrics_;
   options.setMetrics = Blockly.setMainWorkspaceMetrics_;
   var mainWorkspace = new Blockly.WorkspaceSvg(options);
   mainWorkspace.scale = options.zoomOptions.startScale;
   var stuffInsideSvg = mainWorkspace.createDom('blocklyMainBackground');
-  svg.appendChild(stuffInsideSvg);
+  div.appendChild(stuffInsideSvg);
   // A null translation will also apply the correct initial scale.
    var trashLayer = mainWorkspace.createTrashLayer();
   if (trashLayer) {
@@ -265,7 +267,6 @@ Blockly.createMainWorkspace_ = function(container, svg, options) {
 Blockly.init_ = function(mainWorkspace) {
   var options = mainWorkspace.options;
   var svg = mainWorkspace.getParentSvg();
-
   // Supress the browser's context menu.
   Blockly.bindEvent_(svg, 'contextmenu', null,
       function(e) {

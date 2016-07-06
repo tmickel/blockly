@@ -136,6 +136,13 @@ Blockly.Css.CONTENT = [
     'position: absolute;',
     'outline: none;',
     'overflow: visible;',  /* IE overflows by default. */
+    'width: 100%;',
+    'height: 100%;',
+  '}',
+
+  '.blocklyWorkspace {',
+    'width: 100%;',
+    'height: 100%;',
   '}',
 
   '.blocklyWidgetDiv {',
@@ -143,7 +150,11 @@ Blockly.Css.CONTENT = [
     'position: absolute;',
     'z-index: 999;',
   '}',
-  
+
+  '.blocklyBlockCanvas>svg {',
+    'overflow:visible;',
+  '}',
+
   '.blocklyZoom {',
     'position:absolute;',
     'outline: none;',
@@ -159,7 +170,7 @@ Blockly.Css.CONTENT = [
     'position:absolute;',
     'outline: none;',
   '}',
-  
+
   '.blocklyScrollbarVertical {',
     'position:absolute;',
     'outline: none;',
@@ -198,6 +209,17 @@ Blockly.Css.CONTENT = [
     'stroke: #888;',
     'stroke-width: 1;',
   '}',
+
+
+  '.blocklyBlock {',
+    'position: absolute;',
+    'z-index: 0;',
+  '}',
+
+  '.blocklyBlock.dragging {',
+    'z-index: 500;',
+  '}',
+
 
   '.blocklyHighlightedConnectionPath {',
     'fill: none;',

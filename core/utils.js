@@ -195,52 +195,65 @@ Blockly.isTargetInput_ = function(e) {
  * @private
  */
 Blockly.getRelativeXY_ = function(element) {
-  var xy = new goog.math.Coordinate(0, 0);
-  // First, check for x and y attributes.
-  var x = element.getAttribute('x');
-  if (x) {
-    xy.x = parseInt(x, 10);
-  }
-  var y = element.getAttribute('y');
-  if (y) {
-    xy.y = parseInt(y, 10);
-  }
-  // Second, check for transform="translate(...)" attribute.
-  var transform = element.getAttribute('transform');
-  if (transform) {
-    var r = transform && transform.match(Blockly.getRelativeXY_.XY_REGEXP_);
-    if (r) {
-      xy.x += parseFloat(r[1]);
-      if (r[3]) {
-        xy.y += parseFloat(r[3]);
-      }
-    }
-  }
+   var xy = new goog.math.Coordinate(0, 0);
+   // First, check for x and y attributes.
+   var x = element.getAttribute('x');
+   if (x) {
+     xy.x = parseInt(x, 10);
+   }
+   var y = element.getAttribute('y');
+   if (y) {
+     xy.y = parseInt(y, 10);
+   }
+   // Second, check for transform="translate(...)" attribute.
+   var transform = element.getAttribute('transform');
+   if (transform) {
+     var transformComponents =
+         transform.match(Blockly.getRelativeXY_.XY_REGEXP_);
+     if (transformComponents) {
+       xy.x += parseFloat(transformComponents[1]);
+       if (transformComponents[3]) {
+         xy.y += parseFloat(transformComponents[3]);
+       }
+     }
+   }
 
-  var threeDTrans = element.style.transform;
-  if (threeDTrans) {
-    var parts = /translate3d\(\s*([^\s,)]+)[ ,\s]+([^\s,)]+)/.exec(threeDTrans);
-    var xPx = parts[1];
-    var yPx = parts[2];
-    xy.x = xPx.substring(0, xPx.length -2);
-    xy.y = yPx.substring(0, yPx.length -2);
+   // Third, check for style="transform: translate3d(...)".
+   var style = element.getAttribute('style');
+   if (style && style.indexOf('translate3d') > -1) {
+     var styleComponents = style.match(Blockly.getRelativeXY_.XY_3D_REGEXP_);
+     if (styleComponents) {
+       xy.x += parseFloat(styleComponents[1]);
+       if (styleComponents[3]) {
+         xy.y += parseFloat(styleComponents[3]);
+       }
+     }
+   }
 
-  }
+   return xy;
+ };
 
-  return xy;
-};
+ /**
+  * Static regex to pull the x,y values out of an SVG translate() directive.
+  * Note that Firefox and IE (9,10) return 'translate(12)' instead of
+  * 'translate(12, 0)'.
+  * Note that IE (9,10) returns 'translate(16 8)' instead of 'translate(16, 8)'.
+  * Note that IE has been reported to return scientific notation (0.123456e-42).
+  * @type {!RegExp}
+  * @private
+  */
+ Blockly.getRelativeXY_.XY_REGEXP_ =
+     /translate\(\s*([-+\d.e]+)([ ,]\s*([-+\d.e]+)\s*\))?/;
 
-/**
- * Static regex to pull the x,y values out of an SVG translate() directive.
- * Note that Firefox and IE (9,10) return 'translate(12)' instead of
- * 'translate(12, 0)'.
- * Note that IE (9,10) returns 'translate(16 8)' instead of 'translate(16, 8)'.
- * Note that IE has been reported to return scientific notation (0.123456e-42).
- * @type {!RegExp}
- * @private
- */
-Blockly.getRelativeXY_.XY_REGEXP_ =
-    /translate\(\s*([-+\d.e]+)([ ,]\s*([-+\d.e]+)\s*\))?/;
+ /**
+  * Static regex to pull the x,y,z values out of a translate3d() style property.
+  * Accounts for same exceptions as XY_REGEXP_.
+  * @type {!RegExp}
+  * @private
+  */
+ Blockly.getRelativeXY_.XY_3D_REGEXP_ =
+   /transform:\s*translate3d\(\s*([-+\d.e]+)px([ ,]\s*([-+\d.e]+)\s*)px([ ,]\s*([-+\d.e]+)\s*)px\)?/;
+
 
 /**
  * Return the absolute coordinates of the top-left corner of this element,
@@ -323,19 +336,10 @@ Blockly.isRightButton = function(e) {
  * Return the converted coordinates of the given mouse event.
  * The origin (0,0) is the top-left corner of the Blockly svg.
  * @param {!Event} e Mouse event.
- * @param {!Element} svg SVG element.
- * @param {SVGMatrix} matrix Inverted screen CTM to use.
  * @return {!Object} Object with .x and .y properties.
  */
-Blockly.mouseToSvg = function(e, svg, matrix) {
-  var svgPoint = svg.createSVGPoint();
-  svgPoint.x = e.clientX;
-  svgPoint.y = e.clientY;
-
-  if (!matrix) {
-    matrix = svg.getScreenCTM().inverse();
-  }
-  return svgPoint.matrixTransform(matrix);
+Blockly.mouseToSvg = function(e) {
+  return {x: e.clientX, y: e.clientY};
 };
 
 /**

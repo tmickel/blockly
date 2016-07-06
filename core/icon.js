@@ -80,7 +80,7 @@ Blockly.Icon.prototype.createIcon = function() {
       {'class': 'blocklyIconGroup'}, null);
   this.drawIcon_(this.iconGroup_);
 
-  this.block_.getSvgRoot().appendChild(this.iconGroup_);
+  this.block_.svgGroup_.appendChild(this.iconGroup_);
   Blockly.bindEvent_(this.iconGroup_, 'mouseup', this, this.iconClick_);
   this.updateEditable();
 };

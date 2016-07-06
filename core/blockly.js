@@ -138,8 +138,7 @@ Blockly.hueToRgb = function(hue) {
  * @return {!Object} Contains width and height properties.
  */
 Blockly.svgSize = function(svg) {
-  return {width: svg.containerWidth_,
-          height: svg.containerHeight_};
+  return goog.style.getSize(svg);
 };
 
 /**
@@ -166,8 +165,9 @@ Blockly.svgResize = function(workspace) {
     mainWorkspace = mainWorkspace.options.parentWorkspace;
   }
   var svg = mainWorkspace.getParentSvg();
-  var div = svg.parentNode;
-  if (!div) {
+  return;
+  //var div = svg.parentNode;
+  /*if (!div) {
     // Workspace deleted, or something.
     return;
   }
@@ -182,7 +182,7 @@ Blockly.svgResize = function(workspace) {
     svg.containerHeight_ = height;
   }
 
-  mainWorkspace.resize();
+  mainWorkspace.resize();*/
 };
 
 /**
@@ -437,7 +437,7 @@ Blockly.hideChaff = function(opt_allowToolbox) {
  * @this Blockly.WorkspaceSvg
  */
 Blockly.getMainWorkspaceMetrics_ = function() {
-  var svgSize = Blockly.svgSize(this.getParentSvg());
+  var svgSize = goog.style.getSize(this.getParentSvg());
   if (this.toolbox_) {
     if (this.toolboxPosition == Blockly.TOOLBOX_AT_TOP ||
         this.toolboxPosition == Blockly.TOOLBOX_AT_BOTTOM) {

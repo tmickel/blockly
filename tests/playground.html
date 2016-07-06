@@ -187,9 +187,9 @@ function airstrike(n) {
     var prototype = prototypes[Math.floor(Math.random() * prototypes.length)];
     var block = workspace.newBlock(prototype);
     block.initSvg();
-    block.getSvgRoot().setAttribute('transform', 'translate(' +
-        Math.round(Math.random() * 450 + 40) + ', ' +
-        Math.round(Math.random() * 600 + 40) + ')');
+    block.getSvgRoot().setAttribute('style', 'transform: translate3d(' +
+        Math.round(Math.random() * 450 + 40) + 'px, ' +
+        Math.round(Math.random() * 600 + 40) + 'px, 0px)');
     block.render();
   }
 }

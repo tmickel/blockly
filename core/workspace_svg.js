@@ -145,28 +145,6 @@ Blockly.WorkspaceSvg.prototype.scrollbar = null;
 Blockly.WorkspaceSvg.prototype.lastSound_ = null;
 
 /**
- * Inverted screen CTM, for use in mouseToSvg.
- * @type {SVGMatrix}
- * @private
- */
-Blockly.WorkspaceSvg.prototype.inverseScreenCTM_ = null;
-
-/**
- * Getter for the inverted screen CTM.
- * @return {SVGMatrix} The matrix to use in mouseToSvg
- */
-Blockly.WorkspaceSvg.prototype.getInverseScreenCTM = function() {
-  return this.inverseScreenCTM_;
-};
-
-/**
- * Update the inverted screen CTM.
- */
-Blockly.WorkspaceSvg.prototype.updateInverseScreenCTM = function() {
-  this.inverseScreenCTM_ = this.getParentSvg().getScreenCTM().inverse();
-};
-
-/**
  * Save resize handler data so we can delete it later in dispose.
  * @param {!Array.<!Array>} handler Data that can be passed to unbindEvent_.
  */
@@ -191,24 +169,35 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
    * </g>
    * @type {SVGElement}
    */
-  this.svgGroup_ = Blockly.createSvgElement('g',
-      {'class': 'blocklyWorkspace'}, null);
+  this.svgGroup_ = goog.dom.createDom('div', 'blocklyWorkspace');
   if (opt_backgroundClass) {
     /** @type {SVGElement} */
+    this.svgBackgroundWrapper_ = Blockly.createSvgElement('svg', {
+      'xmlns': 'http://www.w3.org/2000/svg',
+      'xmlns:html': 'http://www.w3.org/1999/xhtml',
+      'xmlns:xlink': 'http://www.w3.org/1999/xlink',
+      'version': '1.1'
+    }, this.svgGroup_);
+    this.svgBackgroundWrapper_.style.width = '100%';
+    this.svgBackgroundWrapper_.style.height = '100%';
+    this.svgBackgroundWrapper_.style.display = 'none'; // XXX
     this.svgBackground_ = Blockly.createSvgElement('rect',
-        {'height': '100%', 'width': '100%', 'class': opt_backgroundClass},
-        this.svgGroup_);
+      {
+        'class': opt_backgroundClass,
+        'width': '100%',
+        'height': '100%'
+      }, this.svgBackgroundWrapper_);
     if (opt_backgroundClass == 'blocklyMainBackground') {
       this.svgBackground_.style.fill =
           'url(#' + this.options.gridPattern.id + ')';
     }
   }
   /** @type {SVGElement} */
-  this.svgBlockCanvas_ = Blockly.createSvgElement('g',
-      {'class': 'blocklyBlockCanvas'}, this.svgGroup_, this);
+  this.svgBlockCanvas_ = goog.dom.createDom('div', 'blocklyBlockCanvas');
+  this.svgGroup_.appendChild(this.svgBlockCanvas_);
   /** @type {SVGElement} */
-  this.svgBubbleCanvas_ = Blockly.createSvgElement('g',
-      {'class': 'blocklyBubbleCanvas'}, this.svgGroup_, this);
+  this.svgBubbleCanvas_ = goog.dom.createDom('div', 'blocklyBubbleCanvas');
+  this.svgGroup_.appendChild(this.svgBubbleCanvas_);
   Blockly.bindEvent_(this.svgGroup_, 'mousedown', this, this.onMouseDown_);
   var thisWorkspace = this;
   Blockly.bindEvent_(this.svgGroup_, 'touchstart', null,
@@ -382,28 +371,27 @@ Blockly.WorkspaceSvg.prototype.resizeContents = function() {
   // Do we need this when there is no scrollbar?
   var metrics = this.getMetrics();
   if (!this.isFlyout) {
-    var parentSvg = this.getParentSvg();
+    var parentSvg = this.svgGroup_;
     // Fix for mutators. js error and rect doesn't exist?
     // Start the background/grid 1/2 the view width left or up.
-    this.svgBackground_.setAttribute(
+    /*this.svgBackground_.setAttribute(
       'x', (metrics.contentLeft  - metrics.viewWidth / 2) + 'px');
     this.svgBackground_.setAttribute(
-      'y', (metrics.contentTop - metrics.viewHeight / 2) + 'px');
+      'y', (metrics.contentTop - metrics.viewHeight / 2) + 'px');*/
     // Add viewWidth & height to account for 1/2 view width/height buffer on
-    // each edge of the contents.  This is part of the 1/2 scroll 
+    // each edge of the contents.  This is part of the 1/2 scroll
     // TODO(picklesrus): check whether we need the round.
-    parentSvg.setAttribute('width',
-      Math.round(metrics.contentWidth + metrics.viewWidth));
-    parentSvg.setAttribute('height',
-      Math.round(metrics.contentHeight + metrics.viewHeight));
- }
+    parentSvg.style.width =
+      Math.round(metrics.viewWidth + metrics.contentWidth) + 'px';
+    parentSvg.style.height =
+      Math.round(metrics.viewHeight + metrics.contentHeight) + 'px';
+  }
   if (this.scrollbar) {
     // TODO(picklesrus): Once rachel-fenichel's scrollbar refactoring
     // is complete, call the method that only resizes scrollbar
     // based on contents.
     this.scrollbar.resize();
   }
-  this.updateInverseScreenCTM();
 };
 
 /**
@@ -426,7 +414,6 @@ Blockly.WorkspaceSvg.prototype.resize = function() {
   if (this.zoomControls_) {
     this.zoomControls_.position();
   }
-  this.updateInverseScreenCTM();
   this.recordDeleteAreas();
   this.resizeContents();
 };
@@ -455,9 +442,9 @@ Blockly.WorkspaceSvg.prototype.getParentSvg = function() {
   if (this.cachedParentSvg_) {
     return this.cachedParentSvg_;
   }
-  var element = this.svgGroup_;
+  var element = this.svgGroup_.parentNode;
   while (element) {
-    if (element.tagName == 'svg') {
+    if (element.tagName == 'DIV' && element.className == 'blocklySvg') {
       this.cachedParentSvg_ = element;
       return element;
     }
@@ -746,8 +733,7 @@ Blockly.WorkspaceSvg.prototype.onMouseDown_ = function(e) {
  */
 Blockly.WorkspaceSvg.prototype.startDrag = function(e, xy) {
   // Record the starting offset between the bubble's location and the mouse.
-  var point = Blockly.mouseToSvg(e, this.getParentSvg(),
-      this.getInverseScreenCTM());
+  var point = Blockly.mouseToSvg(e, this.getParentSvg());
   // Fix scale of mouse event.
   point.x /= this.scale;
   point.y /= this.scale;
@@ -760,8 +746,7 @@ Blockly.WorkspaceSvg.prototype.startDrag = function(e, xy) {
  * @return {!goog.math.Coordinate} New location of object.
  */
 Blockly.WorkspaceSvg.prototype.moveDrag = function(e) {
-  var point = Blockly.mouseToSvg(e, this.getParentSvg(),
-      this.getInverseScreenCTM());
+  var point = Blockly.mouseToSvg(e, this.getParentSvg());
   // Fix scale of mouse event.
   point.x /= this.scale;
   point.y /= this.scale;
@@ -785,12 +770,11 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
   // TODO: Remove terminateDrag and compensate for coordinate skew during zoom.
   Blockly.terminateDrag_();
   var delta = e.deltaY > 0 ? -1 : 1;
-  var position = Blockly.mouseToSvg(e, this.getParentSvg(),
-      this.getInverseScreenCTM());
+  var position = Blockly.mouseToSvg(e, this.getParentSvg());
   var position = Blockly.mouseToSvg(e, this.getParentSvg());
   // Hmm, maybe this belongs in mouseToSvg?
   // Other places mouseSvg is called that need to be investigated:
-  //   mouseDownBar (scrollbar.js), moveDrag(workspace.js) 
+  //   mouseDownBar (scrollbar.js), moveDrag(workspace.js)
   position.x += this.translateX;
   position.y += this.translateY;
   this.zoom(position.x, position.y, delta);
@@ -1141,7 +1125,7 @@ Blockly.WorkspaceSvg.prototype.zoom = function(x, y, type) {
   if (this.scrollbar) {
     var metrics = this.getMetrics();
     // Calculate the delta in scroll x and y as the offfset into svg
-    // multiplied by the scale change. 
+    // multiplied by the scale change.
     var scrollXDelta = (-1 * this.translateX + x) * (1-scaleChange);
     var scrollYDelta = (-1 * this.translateY + y) * (1-scaleChange);
     // TranslateX & Y is the translation of the workspace.

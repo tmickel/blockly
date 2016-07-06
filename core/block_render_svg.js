@@ -292,6 +292,13 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
     }
   }
   Blockly.Field.stopCache();
+
+  // Update SVG width and height.
+  if (this.svg_) {
+    var hw = this.getHeightWidth();
+    this.svg_.setAttribute('width', hw.width + 'px');
+    this.svg_.setAttribute('height', hw.height + 'px');
+  }
 };
 
 /**
